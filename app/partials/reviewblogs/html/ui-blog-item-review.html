@@ -1,0 +1,69 @@
+<div class='content-wrapper' ng-init="app.settings.pagetitle = 'Review Blog Post';" ng-controller="blogItemForReviewCtrl">
+    <div class="col-lg-12">
+        <section class="box ">
+            <header class="panel_header">
+                <h2 class="title pull-left">Review Blog Post</h2>
+            </header>
+            <div class="content-body padding-bottom-30">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <!-- start -->
+                        <div class="blog_post full_blog_post">
+                            <div>
+                             <h3 style="color:#33cccc;float: left;">{{title}}</h3>
+                             <a ui-sref="app.form.textAngularForReview({blogId:blogid})" class="btn btn-primary" style="background:#33cccc;float: right;" ng-show="login_category==4"><span>Edit</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>
+                             
+                             </div>
+                             <img src="{{coverImage}}" ng-show="coverImage!=''&& coverImage!=defaultCoverImage" style="max-width:100% !important;">
+                            <div class="blog-content"><p ng-bind-html="content" style="word-wrap: break-word;"></p></div><hr>
+                             <!--comments code-->
+                             <div ng-include="'partials/comments/commentslist.html'"></div>
+                              <!--comments code-->
+                        </div>
+                        <!-- end -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+<script>
+    app.controller("blogItemForReviewCtrl",function($state,$stateParams,$http,$scope,$rootScope,$base64,commonService){
+        
+       if(typeof sessionStorage.username==""){
+				$state.go("access.login");
+	}
+	else{ 
+        $scope.buttonDisable=false;
+        $rootScope.login_category=sessionStorage.category;
+        commonService.blogFullView($stateParams.blogId).then(function(success){
+            $scope.content=success.data.description.content;
+            $scope.title=success.data.description.title;
+            $scope.coverImage=success.data.description.coverimage;
+            $scope.blogid=$stateParams.blogId;
+        });
+        //  commonService.getBlogComments($stateParams.blogId).then(function(success){
+        //         $scope.comments=success.data.description;
+        //         },function(error){
+        //             console.log(error);
+        //     })
+    }
+    // $scope.postComment=function(comment){
+    //     $scope.buttonDisable=true;
+    //     commonService.postComment($stateParams.blogId,comment).then(function(success){
+    //         $scope.comment="";
+    //         $scope.buttonDisable=false;
+    //         commonService.getBlogComments($stateParams.blogId).then(function(success){
+    //             $scope.comments=success.data.description;
+    //         },function(error){
+    //             console.log(error);
+    //         });
+    //     },function(error){
+    //         console.log(error);
+    //     })
+    // }
+    })
+    </script>
+    

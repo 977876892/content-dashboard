@@ -1,0 +1,199 @@
+<style>
+    .md-select-value>span:not(.md-select-icon)
+    {
+        color: #6e6e6e;
+        font-weight:700;
+        
+    }
+    md-select .md-select-value.md-select-placeholder 
+    {
+        border-width: 0 0 2px;
+        border-color: #33cccc;
+    }
+</style>
+<script type="text/javascript">
+    app.controller('FullBlogsCtrl', function($state,$scope,$stateParams, $filter, $rootScope,$http,commonService) {
+      
+       
+         if(sessionStorage.username=="" || sessionStorage.username == undefined){
+                    $state.go("access.login");
+          }
+          else{ 
+            $rootScope.login_category=sessionStorage.category;
+            commonService.getQuriesByCategory($stateParams.teamId).then(function success(response) {                 
+                console.log(response);
+                $scope.questions=response.data.description;
+              });
+            commonService.getLastOneYearQueries($stateParams.teamId).then(function(response){
+                //console.log(response.data.description);
+                $scope.byMonth=response.data.description;
+                //console.log(response.data.description);
+            })
+          }
+        $scope.download=function(){
+            commonService.downloadQuries($stateParams.teamId).
+                    success(function(data, status, headers, config) {
+                        var anchor = angular.element('<a/>');
+                        var anchor = angular.element('<a/>');
+                        anchor.css({display: 'none'}); // Make sure it's not visible
+                        angular.element(document.body).append(anchor); // Attach to document
+
+                        anchor.attr({
+                            href: 'data:attachment/csv;charset=utf-8,' + encodeURI(data),
+                            target: '_blank',
+                            download: 'questions.csv'
+                        })[0].click();
+
+                    }).
+                    error(function(data, status, headers, config) {
+                        // handle error
+                    });
+        }
+        $scope.dateChange=function(year,month){
+            //console.log(year);
+            //console.log(month);
+            if(typeof year !="undefined" && typeof month!="undefined")
+            {
+                  commonService.getQueriesByCategoryByMonth($stateParams.teamId,year,month).then(function(response){
+                console.log(response.data.description);
+                $scope.byMonthCategory=response.data.description;
+                //console.log(response.data.description);
+            })
+            }
+        }
+      
+          
+             
+    });
+
+   
+    app.filter('startBlogFrom', function () {
+	return function (input, start) {
+		if (input) {
+			start = +start;
+			return input.slice(start);
+		}
+		return [];
+	};
+    });
+   
+</script>
+
+<div class='content-wrapper' ng-init="app.settings.pagetitle = 'Full Queries Reports';" ng-controller="FullBlogsCtrl" >
+    <div class="col-lg-12">
+        <section class="box ">
+            <header class="panel_header">
+                <h2 class="title pull-left">Full Quesries Reports</h2>
+            </header>
+            <div class="content-body padding-bottom-15">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
+
+                            <!-- <div class="col-md-7 col-sm-6 col-xs-12">
+                            <div class="input-group primary" inputgroup>
+                                <span class="input-group-addon">                
+                                <span class="arrow"></span>
+                                <i class="fa fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control search-page-input" placeholder="Search" ng-model="searchFilter">
+                            </div>
+                       </div>
+                     <div class="col-md-5 col-sm-6 col-xs-12">
+                        <nav class='pull-right search-paging'>
+                            <uib-pagination ng-model="currentPage" max-size="noOfPages" total-items="totalItems" items-per-page="entryLimit" class="pull-right"></uib-pagination>
+                        </nav>
+                    </div> -->
+                    <div class="clearfix"></div>
+                    <br>
+
+                    <h1>All Answered And UnAnswered Questions Count By Category</h1> 
+                        <table class="table table-striped" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width:20%">Category</th>
+                                    <th style="width:20%">Month</th>
+                                    <th style="width:20%">Questions</th> 
+                                    <th style="width:20%">Answered</th>
+                                    <th style="width:20%">UnAnswered</th>
+                                </tr>
+                            </thead>
+                            <tr ng-repeat="question in questions">
+                                <td>{{question.category_name}}</td>
+                                <td>{{question.month}}
+                                <td>{{question.questions}}</td> 
+                                <td>{{question.answered}}</td>
+                                <td>{{question.unanswered}}</td>
+                            </tr>
+                            
+                        </table>
+
+                        
+                    <h1>All Questions Count By Month(Last One Year)</h1> 
+                        <table class="table table-striped" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width:25%">Month</th>
+                                    <th style="width:25%">Count</th> 
+                                    <th style="width:25%">Answered</th>
+                                    <th style="width:25%">UnAnswered</th> 
+                                </tr>
+                            </thead>
+                            <tr ng-repeat="month in byMonth">
+                                <td>{{month.month}}</td>
+                                <td>{{month.count}}</td> 
+                                <td>{{month.answered}}</td>
+                                <td>{{month.unanswered}}</td> 
+                            </tr>
+                            
+                        </table>
+                        <br><br>
+                        <select  ng-model="selectedYear" ng-change="dateChange(selectedYear,selectedMonth)">
+                                <option value=''>Select Year</option>
+                                <option value="2016">2016</option>
+                                <option value="2017">2017</option>
+                                <option value="2018">2018</option>
+                                <option value="2019">2019</option>
+                                <option value="2020">2020</option>
+                                <option value="2021">2021</option>
+                        </select>
+                            <select ng-model="selectedMonth" ng-change="dateChange(selectedYear,selectedMonth)">
+                                 <option value=''>Select Month</option>
+                                <option value="01">January</option>
+                                <option value="02">February</option>
+                                <option value="03">March</option>
+                                <option value="04">April</option>
+                                <option value="05">May</option>
+                                <option value="06">June</option>
+                                <option value="07">July</option>
+                                <option value="08">Auguest</option>
+                                <option value="09">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                        </select>
+                         <h1>Questions Count By Category (Selected Month)</h1> 
+                        <table class="table table-striped" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width:25%">Month</th>
+                                    <th style="width:25%">Count</th> 
+                                    <th style="width:25%">Answered</th>
+                                    <th style="width:25%">UnAnswered</th> 
+                                </tr>
+                            </thead>
+                            <tr ng-repeat="month in byMonthCategory">
+                                <td>{{month.month}}</td>
+                                <td>{{month.count}}</td> 
+                                <td>{{month.answered}}</td>
+                                <td>{{month.unanswered}}</td> 
+                            </tr>
+                        </table>
+                        <br><br>
+                        <a ng-click="download()" class="btn btn-primary" style="background:#33cccc;margin-top: 3px;">Download All Questions </a></span>
+                    </div>
+                </div>
+                <!-- <button type="button" ng-click="exportData()" class="btn btn-info">Download</button> -->
+            </div>
+        </section>
+    </div>
+</div>

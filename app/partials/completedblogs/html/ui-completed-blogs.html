@@ -1,0 +1,168 @@
+<div class='content-wrapper' ng-init="app.settings.pagetitle = 'COMPLETED BLOGS';">
+    <div class="col-lg-12" ng-controller="completedBlogs">
+        <section class="box ">
+            <header class="panel_header">
+                <h2 class="title pull-left">COMPLETED BLOGS</h2>
+            </header>
+            <div class="content-body padding-bottom-0">
+                <div class="row">
+                    <div class="col-md-7 col-sm-6 col-xs-12">
+                        <div class="input-group primary" inputgroup>
+                            <span class="input-group-addon">                
+                    <span class="arrow"></span>
+                            <i class="fa fa-search"></i>
+                            </span>
+                            <input type="text" class="form-control search-page-input" placeholder="Search" value="Graphic Design" ng-model="search.title">
+                              
+                        </div>
+                    </div>
+                    <div class="col-md-5 col-sm-6 col-xs-12">
+                        <nav class='pull-right search-paging'>
+                            <uib-pagination ng-model="currentPage" max-size="noOfPages" total-items="totalItems" items-per-page="entryLimit" class="pull-right"></uib-pagination>
+                        </nav>
+                    </div>
+                    <div class="clearfix"></div>
+                    
+                    <br>
+                    <div><h3 class="title pull-left" ng-show="items.length==0 ||(items | filter:search).length==0">NO BLOGS ARE AVAILABLE</h3></div>
+                     <!--<span style="color:black;">No Blogs Available</span>-->
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                       
+                        <div class="blog_post" ng-repeat="item in filtered = items | filter:search | startBlogFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
+                            <div style="height: 150px;overflow: hidden;">
+                            <h3><a ui-sref="app.ui.completedBlogView({blogId:item.blogid})" style="color:#33cccc">{{item.title}}</a></h3>
+                             <span style="font-size:15px;" ng-if="item.keywords!=''&&item.keywords!=null"><b>Key Words- </b>{{item.keywords}}</span>
+                             <img src="{{item.image}}" ng-show="item.image!='' && item.image!=defaultCoverImage" style="max-width:100%;"/>
+                            <p ng-bind-html="item.content" style="word-wrap: break-word;"></p>
+                            </div>
+                              <a ui-sref="app.form.textAngularForReview({blogId:item.blogid})" class="btn btn-primary" style="background:#33cccc" ng-hide="login_category==22"><span>Edit</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>
+                              <a ng-click="approveBlogs(item)" class="btn btn-primary" style="background:#33cccc" ng-hide="login_category==22"><span>Approve</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>
+                              <a ng-click="rejectBlog(item)" class="btn btn-primary" style="background:#33cccc" ng-hide="login_category==22"><span>Rewrite</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>
+                              <a ui-sref="app.ui.completedBlogView({blogId:item.blogid})" class="btn btn-primary" style="background:#33cccc;" ng-show="login_category==22"><span>Read more</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>
+                           
+                            <hr style="border-top: 1px solid #33cccc;">
+                        </div>
+                        <!-- end -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script type="text/ng-template" id="approveTemplate.html"><md-dialog aria-label="Images"  ng-controller="ionizedBlogs">
+  <form>
+    <md-toolbar>
+      <div class="md-toolbar-tools" style="background:#33cccc;">
+        <h2 style="color: white;">Approve Blog</h2>
+        <span flex></span>
+        <!--<md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+        </md-button>-->
+      </div>
+    </md-toolbar>
+    <md-dialog-content style="width: 700px;">
+            <md-checkbox ng-model="spelling" ng-change="AllAreCorrent(spelling,content,imagesArrange)" style="margin-top: 10px;margin-left: 200px;" >All spelling are correct.
+            </md-checkbox>
+             <md-checkbox ng-model="content" ng-change="AllAreCorrent(spelling,content,imagesArrange)" style="margin-top: 10px;margin-left: 200px;" >Content is properly arranged.
+            </md-checkbox>
+             <md-checkbox ng-model="imagesArrange" ng-change="AllAreCorrent(spelling,content,imagesArrange)" style="margin-top: 10px;margin-left: 200px;" >All images are properly arranged.
+            </md-checkbox> 
+       <div class="left">
+        <p style="text-align: center;margin: 0 0 -10px;"> Content Writer Rating</p>
+         <p class="star-rating" star-rating rating-value="rating" style="font-size: 20px;text-align: center;" data-max="5" on-rating-selected="contentRateFunction(rating)"></p>
+               
+    </div>
+    
+    <div class="right">
+       <p style="text-align: center;margin: 0 0 -10px;"> Graphic Designer Rating</p>
+         <p class="star-rating" star-rating-graphic rating-value="ratinggraphic" style="font-size: 20px;text-align: center;" data-max="5" on-rating-selected="graphicRateFunction(ratinggraphic)"></p>
+                
+    </div>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+     
+      <span flex></span>
+      <md-button ng-click="answer('not useful')" >
+        Cancel
+      </md-button>
+      <md-button ng-click="ApproveBlog()" style="margin-right:20px;" ng-disabled="enableSubmit">
+        submit
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
+<style type="text/css">
+
+        .rating{
+  color: #a9a9a9;
+  margin: 0;
+  padding: 10px;
+}
+
+ul.rating {
+  display: inline-block;
+}
+
+.rating li {
+  list-style-type: none;
+  display: inline-block;
+  padding: 1px;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.rating .filled {
+  color: #33cccc;
+}
+    
+.left, .center, .right{
+    float:left;
+    width:50%;
+    padding:5px;
+
+}
+    </style>
+</script>
+<script type="text/ng-template" id="rejectTemplate.html"><md-dialog aria-label="Images">
+  <form name="commentform">
+    <md-toolbar>
+      <div class="md-toolbar-tools" style="background:#33cccc;">
+        <h2 style="color: white;">Rewrite Blog</h2>
+        <span flex></span>
+        <!--<md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+        </md-button>-->
+      </div>
+    </md-toolbar>
+    <md-dialog-content style="width: 700px;">
+        <textarea ng-model="comment" placeholder="Post Your Comment" style="width: 96%;margin: 10px;border: 1px solid rgba(0, 0, 0, 0.2);height: 101px;" required ng-change="commentChange(rewriteToContentWriter,rewriteToGraphicDesigner,comment)"></textarea>
+        <md-switch class="md-primary" style="float: left;width:50%;margin-left:15px;" ng-model="rewriteToContentWriter" ng-change="contentChange(rewriteToContentWriter,comment)">
+            Content Writer
+        </md-switch>
+        <md-switch class="md-primary"  ng-model="rewriteToGraphicDesigner" style="float: left;" ng-change="graphicChange(rewriteToGraphicDesigner,comment)">
+            Graphic Designer
+        </md-switch>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+     
+      <span flex></span>
+      <md-button ng-click="answer('not useful')" >
+        Cancel
+      </md-button>
+      <md-button ng-click="postComment(comment,rewriteToContentWriter,rewriteToGraphicDesigner)" style="margin-right:20px;" ng-disabled="enableSubmit">
+        submit
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
+<style>
+ md-switch.md-default-theme.md-checked.md-primary .md-thumb, md-switch.md-checked.md-primary .md-thumb{background-color:#33cccc;}
+ md-switch.md-default-theme.md-checked.md-primary .md-bar, md-switch.md-checked.md-primary .md-bar {
+    background-color: rgb(165, 232, 232);
+}
+</style>
+</script>

@@ -1,0 +1,171 @@
+<style>
+  md-checkbox.md-default-theme:not([disabled]).md-primary.md-checked .md-icon, md-checkbox:not([disabled]).md-primary.md-checked .md-icon {
+    background-color:#33cccc;
+}
+ md-select .md-select-value.md-select-placeholder {
+    color: rgb(51, 51, 51);
+     border-color: #46be8a;
+     border-width: 0 0 2px;
+}
+</style>
+<script type="text/javascript">
+    app.controller('AlltransationsCtrl', function($state,$scope,$http,commonService,$rootScope) {
+        //start date
+
+         if(typeof sessionStorage.username=="" || sessionStorage.username == undefined){
+                    $state.go("access.login");
+          }
+          else{
+                $rootScope.login_category=sessionStorage.category;
+                 //for blog start from first page
+                    $rootScope.selectedIndexForBlogs=0;
+                    $rootScope.currentPageForBlogs=1;	
+				//for blog start from first page
+                commonService.getAllTransationsForIM()
+                  .then(function(response){
+                    $scope.settlements=response.data.description;
+                     console.log(response);
+                     $scope.totalItems=response.data.description.length;
+                $scope.currentPage = 1;
+                $scope.entryLimit = 10; // items per page
+                $scope.noOfPages = Math.ceil($scope.totalItems / $scope.entryLimit);
+                  });
+          }
+              
+              $scope.exportData=function(){
+                    alasql('SELECT * INTO XLSX("settlements.xlsx",{headers:true}) FROM ?',[$scope.settlements]);
+                } 
+               
+              $scope.paySelectedTransactions=function(){
+              	console.log(selectedIds);
+                  var ids="";
+                  for(var i=0;i<selectedIds.length;i++)
+                  {
+                      if(i==0)
+                      {
+                          ids=selectedIds[i];
+                      }
+                      else{
+                            ids=ids+","+selectedIds[i]
+                      }
+                      
+                  }
+                  commonService.markAsPaid(ids).then(function(success){
+                    commonService.getAllTransationsForIM().then(function(response){
+                    $scope.settlements=response.data.description;
+                    $scope.totalItems=response.data.description.length;
+                    $scope.entryLimit = 10; // items per page
+                    $scope.noOfPages = Math.ceil($scope.totalItems / $scope.entryLimit);
+                  });
+                    
+                  },function(error){
+
+                  })
+                  console.log(ids);
+              } 
+              var selectedIds=[];
+              $scope.getSelectedId=function(x){
+                  
+                  var index = selectedIds.indexOf(x);
+                  console.log(index);
+                  if (index > -1) {
+                        selectedIds.splice(index, 1);
+                    }
+                    else
+                        selectedIds.push(x);
+                    
+              } 
+              
+              
+    });
+    
+    app.filter('startBlogFrom', function () {
+		return function (input, start) {
+			if (input) {
+				start = +start;
+				return input.slice(start);
+			}
+			return [];
+		};
+      });
+   
+</script>
+
+
+<div class='content-wrapper' ng-init="app.settings.pagetitle = 'All Transations';" ng-controller="AlltransationsCtrl" >
+    <div class="col-lg-12">
+        <section class="box ">
+            <header class="panel_header">
+                <h2 class="title pull-left">All Transations Table</h2>
+            </header>
+            <div class="content-body padding-bottom-15">
+            <button class="btn btn-success" ng-click="paySelectedTransactions()">Mark As Paid</button>
+            &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+            <md-input-container flex="50" style="width: 100px;">
+                <label><b>Select</b></label>
+                <md-select name="favoriteColor" ng-model="select_item">
+                  <md-option value="">All</md-option>
+                  <md-option value="process">Process</md-option>
+                  <md-option value="paid">Paid</md-option>
+                </md-select>
+             </md-input-container>
+
+			  <span>
+                <div class="row">
+
+                    <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
+                     <br>
+                         <div class="col-md-7 col-sm-6 col-xs-12">
+	                        <div class="input-group primary" inputgroup>
+	                            <span class="input-group-addon">                
+	                            <span class="arrow"></span>
+	                            <i class="fa fa-search"></i>
+	                            </span>
+	                            <input type="text" class="form-control search-page-input" placeholder="Search" ng-model="searchFilter">
+	                        </div>
+                    </div>
+                    <div class="col-md-5 col-sm-6 col-xs-12">
+                        <nav class='pull-right search-paging'>
+                            <uib-pagination ng-model="currentPage" max-size="noOfPages" total-items="totalItems" items-per-page="entryLimit" class="pull-right"></uib-pagination>
+                        </nav>
+                    </div>
+                    <div class="clearfix"></div>
+                        <table class="table table-striped" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th style="width:20%">Transaction Id</th>
+                                    <th style="width:25%">Date</th>
+                                    <th style="width:15%">Amount</th>
+                                    <th style="width:25%">User Id</th>
+                                    <th style="width:15%">Status</th>
+                                    <th style="width:15%">Total Credits</th>
+                                    <th style="width:15%">From</th>
+                                    <th style="width:15%">To</th>
+                                </tr>
+                            </thead>
+                            <tr ng-repeat="item in filtered=settlements | filter:searchFilter | filter:select_item |startBlogFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
+                              <td>
+                              <md-checkbox md-no-ink aria-label="Checkbox No Ink" class="md-primary" ng-click="getSelectedId(item.id)"></md-checkbox>
+                               
+                              </td>
+                                <td>{{item.Transaction_id}}</td>
+                                <td>{{item.Date}}</td>
+                                <td>{{item.Amount}}</td>
+                                <td>{{item.Userid}}</td>
+                                <td>{{item.Status}}</td>
+                                <td>{{item.Total_credits}}</td>
+                                <td>{{item.From}}</td>
+                                <td>{{item.To}}</td>
+                            </tr>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <button type="button" ng-click="exportData()" class="btn btn-info" ng-show="settlements.length > 0">Download</button>
+                </span>
+            </div>
+        </section>
+    </div>
+</div>

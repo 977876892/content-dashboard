@@ -1,0 +1,78 @@
+<style>
+    .blog_post {
+        display: inline-block;
+        width: 100%;
+         margin: 0 0 0px 0;
+}
+    </style>
+<div class='content-wrapper' ng-init="app.settings.pagetitle = 'Review BLOGS';">
+    <div class="col-lg-12" ng-controller="reviewBlogs">
+        <section class="box ">
+            <header class="panel_header">
+                <h2 class="title pull-left">REVIEW BLOGS</h2>
+                <!--<div class="actions panel_actions pull-right">
+                    <i class="box_toggle material-icons">expand_more</i>
+                    <i class="box_setting material-icons" ng-click="section_modal()">mode_edit</i>
+                    <i class="box_close material-icons">close</i>
+                </div>-->
+            </header>
+            <div class="content-body padding-bottom-0">
+                <div class="row">
+                    <div class="col-md-7 col-sm-6 col-xs-12">
+                        <div class="input-group primary" inputgroup>
+                            <span class="input-group-addon">                
+                    <span class="arrow"></span>
+                            <i class="fa fa-search"></i>
+                            </span>
+                            <input type="text" class="form-control search-page-input" placeholder="Search" value="Graphic Design" ng-model="search.title">
+                        </div>
+                    </div>
+                    <div class="col-md-5 col-sm-6 col-xs-12">
+                        <nav class='pull-right search-paging'>
+                            <uib-pagination ng-model="currentPage" max-size="noOfPages" total-items="totalItems" items-per-page="entryLimit" class="pull-right"></uib-pagination>
+                        </nav>
+                    </div>
+                    <div class="clearfix"></div>
+                    <br>
+                     <!--<span style="color:black;">No Blogs Available</span>-->
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <h3 class="title pull-left" ng-show="items.length==0 ||(items | filter:search).length==0">NO BLOGS ARE AVAILABLE</h3>
+                    <!-- start -->
+                        <!--<div class="blog_post" ng-repeat="item in filtered = items | filter:search | startBlogFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
+                            <h3><a ui-sref="app.ui.blogview({blogId:item.id})">{{item.title}}</a></h3>
+                            <h5>Written by <a href="#">{{item.author}}</a> on {{item.date}}</h5>
+                            <p class="blog_info">
+                                <i class="fa fa-comment"></i> <a href="#comments">{{item.comments}} comments</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                                <i class="fa fa-tags"></i>
+                                <a ng-repeat="category in item.category">{{category.name}}</a>
+                            </p>
+                            <img class="media-object" ng-src="{{item.thumb}}" alt="">
+                            <p class="blog-content">{{item.description}}</p>
+                            <a ui-sref="app.ui.blogview({blogId:item.id})" class="btn btn-primary"><span>Read more</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>
+                        </div>-->
+                        <!-- end -->
+                        <!-- start -->
+                       
+                        <div class="blog_post" ng-repeat="item in filtered = items | filter:search | startBlogFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
+                             <div style="height: 150px;overflow: hidden;">
+                            <h3><a ui-sref="app.ui.reviewBlog({blogId:item.blogid})" style="color:#33cccc">{{item.title}}</a></h3>
+                            <span style="font-size:15px;"><b>Clinic Name- </b>{{item.clinic_name}}</span>
+                             <span style="font-size:15px;" ng-if="item.keywords!=''&&item.keywords"><b>Key Words- </b>{{item.keywords}}</span>
+                            <br><br>
+                             <img src="{{item.image}}" ng-show="item.image!='' && item.image!=defaultCoverImage" style="max-width:100%;"/>
+                            <p ng-bind-html="item.content" style="word-wrap: break-word;"></p>
+                             </div>
+                            <!--<img class="media-object" ng-src="{{item.image.url}}">
+                            <p class="blog-content">{{item.description}}</p>-->
+                            <a ui-sref="app.form.textAngularForReview({blogId:item.blogid})" class="btn btn-primary" style="background:#33cccc" ng-show="login_category==4"><span>Edit</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>
+                             <a ui-sref="app.ui.blogViewForGraphic({blogId:item.blogid,contentStatus:item.content_status,graphicStatus:item.graphic_status})" class="btn btn-primary" style="background:#33cccc" ng-show="login_category==19"><span>Edit</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>
+                            <hr style="border-top: 1px solid #33cccc;">
+                            
+                        </div>
+                        <!-- end -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

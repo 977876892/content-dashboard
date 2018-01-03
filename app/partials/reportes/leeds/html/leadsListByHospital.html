@@ -1,0 +1,168 @@
+<style>
+    .md-select-value>span:not(.md-select-icon)
+    {
+        color: #6e6e6e;
+        font-weight:700;
+        
+    }
+    md-select .md-select-value.md-select-placeholder 
+    {
+        border-width: 0 0 2px;
+        border-color: #33cccc;
+    }
+</style>
+<script type="text/javascript">
+    app.controller('FullLeadssCtrl', function($state,$scope,$stateParams, $filter, $rootScope,$http,commonService) {
+      
+       
+         if(sessionStorage.username=="" || sessionStorage.username == undefined){
+                    $state.go("access.login");
+          }
+          else{ 
+            $rootScope.login_category=sessionStorage.category;
+            $scope.downloadDisable=true;
+            // console.log(sessionStorage.IonServer+"/index.php/request?module=easydiscuss&action=get&resource=posts&userid="+$stateParams.teamId+"&status=0");
+            //   $http.get(sessionStorage.IonServer+"/index.php/request?module=easydiscuss&action=get&resource=posts&userid="+$stateParams.teamId+"&status=0").then(function success(response) {                 
+            //     $scope.questions=response.data.posts;
+            //     $scope.totalItems=response.data.posts.length;
+            //     $scope.currentPage = 1;
+            //     $scope.entryLimit = 10; // items per page
+            //     $scope.noOfPages = Math.ceil($scope.totalItems / $scope.entryLimit);
+            //   });
+              
+                $scope.getLeads=function(){
+                    console.log($scope.fromDate);
+                    console.log($scope.toDate);
+                    if(typeof $scope.fromDate=="undefined" ||typeof $scope.toDate=="undefined")
+                    {
+                            alert("From And To Dates Are Mandatory");
+                    }
+                    else{
+                         from=($scope.fromDate.getMonth()+1)+"/"+$scope.fromDate.getDate()+"/"+$scope.fromDate.getFullYear();
+                         to=($scope.toDate.getMonth()+1)+"/"+$scope.toDate.getDate()+"/"+$scope.toDate.getFullYear();
+                        
+                          commonService.leadsBetweenDates($stateParams.teamId,from,to).then(function success(response) {                 
+                                console.log(response);
+                                if(response.data.description.length==0)
+                                {
+                                    $scope.downloadDisable=true;
+                                }
+                                else{
+                                    $scope.downloadDisable=false;
+                                }
+                                $scope.leads=response.data.description;
+                                console.log($scope.leads);
+                               
+                            });
+                         
+                    }
+                
+                }
+             
+          }
+        $scope.download=function(){
+                from=($scope.fromDate.getMonth()+1)+"/"+$scope.fromDate.getDate()+"/"+$scope.fromDate.getFullYear();
+                to=($scope.toDate.getMonth()+1)+"/"+$scope.toDate.getDate()+"/"+$scope.toDate.getFullYear();
+                commonService.downloadLeads($stateParams.teamId,from,to).
+                        success(function(data, status, headers, config) {
+                            var anchor = angular.element('<a/>');
+                            var anchor = angular.element('<a/>');
+                            anchor.css({display: 'none'}); // Make sure it's not visible
+                            angular.element(document.body).append(anchor); // Attach to document
+
+                            anchor.attr({
+                                href: 'data:attachment/csv;charset=utf-8,' + encodeURI(data),
+                                target: '_blank',
+                                download: 'leads.csv'
+                            })[0].click();
+
+                        }).
+                        error(function(data, status, headers, config) {
+                            // handle error
+                        });
+        }
+      
+          
+             
+    });
+
+   
+    app.filter('startBlogFrom', function () {
+	return function (input, start) {
+		if (input) {
+			start = +start;
+			return input.slice(start);
+		}
+		return [];
+	};
+    });
+   
+</script>
+
+<div class='content-wrapper' ng-init="app.settings.pagetitle = 'Full Queries Reports';" ng-controller="FullLeadssCtrl" >
+    <div class="col-lg-12">
+        <section class="box ">
+            <header class="panel_header">
+                <h2 class="title pull-left">Leads Reports</h2>
+            </header>
+            <div class="content-body padding-bottom-15">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
+
+                            <!-- <div class="col-md-7 col-sm-6 col-xs-12">
+                            <div class="input-group primary" inputgroup>
+                                <span class="input-group-addon">                
+                                <span class="arrow"></span>
+                                <i class="fa fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control search-page-input" placeholder="Search" ng-model="searchFilter">
+                            </div>
+                       </div>
+                     <div class="col-md-5 col-sm-6 col-xs-12">
+                        <nav class='pull-right search-paging'>
+                            <uib-pagination ng-model="currentPage" max-size="noOfPages" total-items="totalItems" items-per-page="entryLimit" class="pull-right"></uib-pagination>
+                        </nav>
+                    </div> -->
+                     <div layout-gt-xs="row">
+                        <div flex-gt-xs>
+                        <h4>From Date</h4>
+                        <md-datepicker ng-model="fromDate" md-placeholder="From Date"></md-datepicker>
+                        </div>
+
+                        <div flex-gt-xs>
+                        <h4>To Date</h4>
+                        <md-datepicker ng-model="toDate" md-placeholder="To Date"></md-datepicker>
+                        </div>
+                    </div>
+                      <a ng-click="getLeads()" class="btn btn-primary" style="background:#33cccc;margin-top: 3px;">Get Leads </a></span>
+
+                    <div class="clearfix"></div>
+                    <br>
+
+                    <!-- <h1>All Answered And UnAnswered Questions Count By Category</h1>  -->
+                        <table class="table table-striped" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width:25%">First Name</th>
+                                    <th style="width:25%">Sur name</th> 
+                                    <!-- <th style="width:25%">Answered</th>
+                                    <th style="width:25%">UnAnswered</th> -->
+                                </tr>
+                            </thead>
+                             <tr ng-repeat="lead in leads">
+                                <td>{{lead.firstname}}</td>
+                                <td>{{lead.surname}}</td> 
+                                <!-- <td>{{question.answered}}</td>
+                                <td>{{question.unanswered}}</td> -->
+                            </tr> 
+                            
+                        </table>
+
+                        <a ng-click="download()" class="btn btn-primary" style="background:#33cccc;margin-top: 3px;" ng-disabled="downloadDisable">Download Selected Leads </a></span>
+                    </div>
+                </div>
+                <!-- <button type="button" ng-click="exportData()" class="btn btn-info">Download</button> -->
+            </div>
+        </section>
+    </div>
+</div>

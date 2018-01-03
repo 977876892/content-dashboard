@@ -1,0 +1,106 @@
+<style>
+    .md-select-value>span:not(.md-select-icon)
+    {
+        color: #6e6e6e;
+        font-weight:700;
+        
+    }
+    md-select .md-select-value.md-select-placeholder 
+    {
+        border-width: 0 0 2px;
+        border-color: #33cccc;
+    }
+</style>
+<script type="text/javascript">
+    app.controller('FullVisitsCtrl', function($state,$scope,$stateParams, $filter, $rootScope,$http,commonService) {
+      
+       
+         if(sessionStorage.username=="" || sessionStorage.username == undefined){
+                    $state.go("access.login");
+          }
+          else{ 
+            $rootScope.login_category=sessionStorage.category;
+             commonService.getTotalAmount($stateParams.teamId).then(function success(response) {                 
+                console.log(response);
+                $scope.totalAmounts=response.data.count;
+              });
+            commonService.getTotalVisits($stateParams.teamId).then(function(response){
+                 $scope.totalVisits=response.data.count;
+            })
+            commonService.getTotalVisitsByMonth($stateParams.teamId).then(function(response){
+                $scope.totalVisitsByMonth=response.data.count;
+                console.log($scope.totalVisitsByMonth);
+            })  
+          }  
+             
+    });
+</script>
+
+<div class='content-wrapper' ng-init="app.settings.pagetitle = 'Full Queries Reports';" ng-controller="FullVisitsCtrl" >
+    <div class="col-lg-12">
+        <section class="box ">
+            <header class="panel_header">
+                <h2 class="title pull-left">Full Visits Report</h2>
+            </header>
+            <div class="content-body padding-bottom-15">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
+
+                    <div class="clearfix"></div>
+                    <br>
+
+                    <h1>All Visits Amount By Docotr</h1> 
+                    <table class="table table-striped" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width:50%">Name</th>
+                                    <th style="width:50%">Amount</th> 
+                                </tr>
+                            </thead>
+                            <tr ng-repeat="amount in totalAmounts">
+                                <td>{{amount.name}}</td>
+                                <td>{{amount.total_amount}}</td> 
+                            </tr>
+                            
+                        </table>
+                       
+                        <br><br>
+                    <h1>All Visits Count By Doctor</h1> 
+                        <table class="table table-striped" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width:50%">Name</th>
+                                    <th style="width:50%">Count</th> 
+                                </tr>
+                            </thead>
+                            <tr ng-repeat="visit in totalVisits">
+                                    <td>{{visit.name}}</td>
+                                    <td>{{visit.total_visits}}</td> 
+                            </tr>
+                            
+                        </table>
+
+                         <br><br>
+                    <h1>All Visits Count By Doctor And Month</h1> 
+                        <table class="table table-striped" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width:30%">Name</th>
+                                    <th style="width:30%">Month</th> 
+                                    <th style="width:30%">Total Visits</th>
+                                </tr>
+                            </thead>
+                            <tr ng-repeat="visit in totalVisitsByMonth | orderBy:'-'">
+                                    <td>{{visit.name}}</td>
+                                    <td>{{visit.month}}</td> 
+                                    <td>{{visit.total_visits}}</td>
+                            </tr>
+                            
+                        </table>
+                       </div>
+                </div>
+                <!-- <button type="button" ng-click="exportData()" class="btn btn-info">Download</button> -->
+            </div>
+        </section>
+    </div>
+</div>

@@ -1,0 +1,752 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  
+
+<head>
+    <!-- <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <meta name="fragment" content="!">
+    <meta name="author" content="Austin Anderson">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="contact" content="austin@rarebreedstudios.com">
+    <meta name="keywords" content="angularjs,angular.js,texteditor,text editor,Wysiwyg,javascript text editor,javascript Wysiwyg">
+    <meta name="copyright" content="Austin Anderson. All rights reserved">
+    <meta charset="utf-8">
+    <title>Content Writer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="images/favicon.png">
+    <link rel="author" href="https://www.linkedin.com/in/austinanderson1">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,300">
+    <link rel="stylesheet" href="http://textangular.com/dist/textAngular.css" type="text/css">
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.11/angular.min.js" type="text/javascript"></script>
+    -->
+     
+    <style>
+         .popover {
+            position: fixed !important;
+            top: 430px !important;
+        }  
+        
+       .ta-scroll-window > .ta-bind {
+            height: 300px !important;
+            overflow:auto;
+        }
+       
+      .imgsize{
+        width: 100%;
+        height: 300px;
+        overflow:auto;
+      }
+       h1{
+            color: black;
+            font-size: 26px;
+            font-family: 'Opensans regular';
+            font-weight: 600;
+        }
+        h2{
+            font-size: 19px;
+            color: #A6A6A6;
+            font-family: 'Opensans regular';
+            font-weight: 600;
+        }
+         h3{
+            font-size: 16px;
+            color: #404040;
+            font-family: 'Opensans regular';
+        }
+         p{
+            font-size: 16px !important;
+            color: #404040 !important;
+            font-family: 'Opensans regular' !important;
+        }
+         p span{
+            font-size: 16px;
+            font-family: 'Opensans regular';
+        }
+        .setImageSize{
+          height:150px !important;
+          width:250px !important;
+        }
+        .test img{
+            height:inherit !important;
+             max-width: 100%;
+           
+        }
+        .fr-box.fr-basic .fr-element {
+          color: #000;
+          padding: 10px;
+          -webkit-box-sizing: border-box;
+          -moz-box-sizing: border-box;
+          box-sizing: border-box;
+          overflow-x: auto;
+          min-height: 40px;
+          height: 300px;
+          margin-top: 30px;
+      }
+        
+
+    </style>
+  
+
+<script>
+ 
+    app.controller("demoController", ['$stateParams','$scope','$state','$rootScope','$mdDialog','$http','$q','commonService','$location','$window','$base64', function($stateParams,$scope,$state,$rootScope,$mdDialog,$http,$q,commonService,$location,$window,$base64) {
+        var today_date=new Date();
+         
+        //  commonService.getBlogComments($stateParams.blogId).then(function(success){
+        //    //console.log(success);
+        //                 $scope.comments=success.data.description;
+        //                 },function(error){
+        //                     console.log(error);
+        //             });
+        $scope.froalaOptions = {
+          // toolbarButtons : ["bold", "italic", "underline", "|", "align", "formatOL", "formatUL","insertImage"],
+          // events: {
+          //           'froalaEditor.initialized': function () {
+          //             // Use the methods like this.
+          //             console.log("venkat");
+          //             $scope.froalaOptions.froalaEditor('selection.get');
+          //             }
+          //         }
+                  // Set the image upload URL.
+            // Set the image upload URL.
+            charCounterCount: true,
+             key: 'YC-9A-8nrssD5vn==',
+              // toolbarButtons: ['fullscreen', 'undo', 'redo', '|', 'bold', 'italic', 'underline', '|', 'formatOL', 'formatUL', 'align', 'outdent', 'indent', 'quote', '-', 'paragraphFormat', 'fontFamily', 'fontSize', 'color', 'insertLink', 'insertImage', 'insertVideo', 'insertTable', '|', 'emoticons', 'spellChecker'],
+                imageUploadURL: sessionStorage.IonServer+'/index.php/request?action=post&module=user&resource=upload',
+        
+                // Additional upload params.
+                imageUploadParams: {userid: sessionStorage.USER_ID,username:sessionStorage.username,
+                password:$base64.encode(sessionStorage.password),encode:true,auth_key:sessionStorage.key,link:1},
+        
+                // Set request type.
+                imageUploadMethod: 'POST',
+        
+                // Set max image size to 5MB.
+                imageMaxSize: 5 * 1024 * 1024,
+        
+                // Allow to upload PNG and JPG.
+                imageAllowedTypes: ['jpeg', 'jpg', 'png'],
+        }
+        
+        $scope.contentChange=function(content){
+          sessionStorage.contentChange=content;
+          $rootScope.previewContent=content;
+        }
+        $scope.dropHandler = function(file, insertAction){
+          console.log(file);
+        };
+       
+             $scope.$on('$locationChangeStart', function(event) {
+                console.log(sessionStorage.contentChange);
+                if($scope.changeroute && sessionStorage.contentChange.length!=0)
+                {
+                        if(!confirm('You have unsaved changes, go back?'))
+                        {
+                          event.preventDefault();
+                        }
+                } else{
+                    $scope.changeroute=true;
+                  }
+            //  $scope.actualLocation = $location.path();
+            });  
+             
+        
+         
+           
+
+        //     $scope.$watch(function (event) {return $location.path()}, function (newLocation, oldLocation) {
+        //       if($scope.actualLocation === newLocation) {
+        //         console.log($cookies.get('contentChange').length);
+        //         if($cookies.get('contentChange').length!=29)
+        //         {
+        //           confirmed = $window.confirm("You have unsaved edits. Do you wish to leave?");
+        //           console.log(confirmed);// event.defaultPrevented;
+        //           //console.log(event);
+        //           if(confirmed)
+        //           {
+        //             event.preventDefault();
+        //                return;
+        //            //s $location.path(oldLocation);
+        //            // return $location;
+        //           }
+               
+        //           // alert('Why did you use history back?');
+        //           //  var confirm = $mdDialog.confirm()
+				// 	        //   .title('Why did you use history back?')
+        //           //            .ok('Yes')
+				// 	        //   .cancel('No'); 
+        //           //   $mdDialog.show(confirm).then(function() {
+        //           //         console.log("venkat");
+        //           //   });
+        //         }
+        //            //   alert('Why did you use history back?');
+        //       }
+        // });
+
+        if(typeof sessionStorage.username=="" || sessionStorage.username == undefined){
+				    $state.go("access.login");
+	      }
+        else{
+              $scope.category=sessionStorage.category;
+              $rootScope.login_category=sessionStorage.category;
+              $scope.graphicStatus=$stateParams.graphicStatus;
+              $rootScope.htmlContent=''
+              $rootScope.graphic_designer=''
+              $rootScope.title=''
+              $rootScope.previewContent='';
+              $http.get(sessionStorage.IonServer+"/index.php/request?action=composeblog&module=ionize&resource=posts&blog_id="+$stateParams.blogId+"&group_id=4").then(function(success){
+                  $rootScope.htmlContent=success.data.description.content;
+                  $rootScope.previewContent=$rootScope.htmlContent;
+                  $rootScope.graphic_designer=success.data.description.graphic_designer;
+                  $rootScope.title=success.data.description.title;
+                  $scope.keywords=success.data.description.keywords;
+                  console.log($rootScope.htmlContent);
+              });
+              commonService.getImages($stateParams.blogId).then(function(response){
+                 if(typeof response.data.description=="undefined")
+                      $scope.pic=[];
+                  else
+                      $scope.pic=response.data.description;  
+               });
+        }
+
+              $scope.saveAsDraft=function(htmlContent){
+                        
+                        var date=new Date();
+                        var dataObject={
+                          'title':$scope.title,
+                          'content':htmlContent,
+                          'blog_id':$stateParams.blogId,
+                          'modified':today_date.getFullYear()+"-"+(today_date.getMonth()+1)+"-"+today_date.getDate(),
+                          'state':'draft',
+                          'userid':sessionStorage.USER_ID
+                        }
+                        console.log(dataObject);
+                        commonService.saveAsDraft(dataObject).then(function(success){
+                       $mdDialog.show($mdDialog.alert()
+                                .parent(angular.element(document.querySelector('#popupContainer')))
+                                .clickOutsideToClose(true)
+                                .textContent("saved successfully")
+                                .ok('Ok')
+                                .targetEvent()
+                            ).then(function() {
+                              sessionStorage.contentChange='';
+                                    //  $state.go("app.ui.myblogs");
+                            }, function() {
+                            });
+                    },function(fail){
+                      $mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent('Your Blog Is Not Saved Please Check Your Internet Connection And Then Contact Medicodesk.')
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    )
+                    })
+              }
+               $scope.sendBlogToGraphicDesigner=function(htmlContent){
+                 var confirm = $mdDialog.confirm()
+					                    .title("if your work is completed click yes then it will assign to the graphic designer.")
+                              .ok('Yes')
+					                    .cancel('No'); 
+			          $mdDialog.show(confirm).then(function() {
+                              var date=new Date();
+                              var dataObject={
+                                'title':$scope.title,
+                                'content':htmlContent,
+                                'blog_id':$stateParams.blogId,
+                                'modified':today_date.getFullYear()+"-"+(today_date.getMonth()+1)+"-"+today_date.getDate(),
+                                'state':'done',
+                                'userid':sessionStorage.USER_ID
+                              }
+                              commonService.sendBlogToGraphicDesigner(dataObject).then(function(success){
+                                    $state.go("app.ui.myblogs");
+                                  },function(fail){
+                                    console.log(fail);
+                                    $mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent('Please Check Your Internet Connection And Then Contact Medicodesk.')
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    )
+                                  })
+
+                                      },function() {
+                                        
+                                      });	       
+                        
+                  //console.log(htmlContent);
+              }
+              $scope.saveBlogAsIonize=function(htmlContent){
+                      var confirm = $mdDialog.confirm()
+                          .title('Are You sure Your Work is Done?')
+                                    .ok('Yes')
+                                    .cancel('No'); 
+                          $mdDialog.show(confirm).then(function() {
+                                var date=new Date();
+                                var dataObject={
+                                  'title':$scope.title,
+                                  'content':$scope.htmlContent,
+                                  'blog_id':$stateParams.blogId,
+                                  'modified':today_date.getFullYear()+"-"+(today_date.getMonth()+1)+"-"+today_date.getDate(),
+                                  'state':'ionize',
+                                  //'userid':sessionStorage.USER_ID
+                                }
+                          
+                           commonService.ionizetheBlog(dataObject).then(function(success){
+                               $mdDialog.show($mdDialog.alert()
+                                .parent(angular.element(document.querySelector('#popupContainer')))
+                                .clickOutsideToClose(true)
+                                .textContent("Your Work is Done. you may get approval or rewrite the blog from the main editor.")
+                                .ok('Ok')
+                                .targetEvent()
+                            ).then(function() {
+                                      sessionStorage.contentChange='';
+                                      $state.go("app.ui.myblogs");
+                            }, function() {
+                            });
+                                
+                            },function(fail){
+                              console.log(fail);
+                              $mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent('Your Blog Is Not Ionize Please Check Your Internet Connection And Then Contact Medicodesk.')
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    )
+                            })
+                        },function() {
+                          
+                        });	       
+              }
+        // $scope.postComment=function(comment){
+        //          $scope.buttonDisable=true;
+        //          commonService.postComment($stateParams.blogId,comment).then(function(success){
+        //            console.log(success);
+        //             $scope.comment="";
+        //             $scope.buttonDisable=false;
+        //             commonService.getBlogComments($stateParams.blogId).then(function(success){
+        //                 $scope.comments=success.data.description;
+        //             },function(error){
+        //                 console.log(error);
+        //             });
+        //         },function(error){
+        //             console.log(error);
+        //         })
+        //     }
+          $scope.preview=function(ev){
+              $mdDialog.show({
+                        controller: DialogController,
+                        templateUrl: 'preview.html',
+                        parent: angular.element(document.body),
+                        targetEvent: ev,
+                        clickOutsideToClose:true,
+                        fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+                    })
+                    .then(function() {
+
+                    });
+          }
+        $scope.getfullviewimg=function(item,ev){
+           console.log(item);
+          $rootScope.fullview=item;
+           $mdDialog.show({
+                        controller: DialogController,
+                        templateUrl: 'fullimage.html',
+                        parent: angular.element(document.body),
+                        targetEvent: ev,
+                        clickOutsideToClose:true,
+                        fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+                    })
+                    .then(function() {
+
+                    });
+        }
+
+
+ $rootScope.showBlogImageDialog = function() {
+   var deferred = $q.defer();  
+    app.directive('fileModel', ['$parse', function ($parse) {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            var model = $parse(attrs.fileModel);
+            var modelSetter = model.assign;
+            
+            element.bind('change', function(){
+                scope.$apply(function(){
+                    modelSetter(scope, element[0].files[0]);
+                });
+            });
+        }
+    };
+}]); 
+
+     //var ev=$event;
+    $mdDialog.show({
+      controller: DialogController,
+      templateUrl: 'dialog1.tmpl.html',
+      //parent: angular.element(document.body),
+      //targetEvent: ev,
+      clickOutsideToClose:true,
+      //fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+    })
+    .then(function(answer) {
+       var fd = new FormData();
+            fd.append('file', $scope.myFile);
+            fd.append('userid', 180);
+            $http.post(sessionStorage.IonServer+"/index.php?option=com_api&format=raw&app=easyblog&resource=image", fd, {
+                transformRequest: angular.identity,
+                headers: {'Content-Type': undefined}
+            })
+            .success(function(response){
+                console.log(response.url);
+                 deferred.resolve(response.url); 
+               // return response;
+            })
+            .error(function(){
+            }); 
+         
+      //return true;
+      $scope.status = 'You said the information was "' + answer + '".';
+    }, function() {
+      $scope.status = 'You cancelled the dialog.';
+
+    });
+    return deferred.promise;
+  };
+ function DialogController($scope, $mdDialog) {
+   $scope.fullviewimg=$rootScope.fullview;
+   $scope.previewcontent=$rootScope.previewContent;
+   $scope.previewtitle=$rootScope.title;
+    $scope.hide = function() {
+      $mdDialog.hide();
+    };
+
+    $scope.cancel = function() {
+      $mdDialog.cancel();
+    };
+
+    $scope.answer = function(answer) {
+      //console.log(answer);
+      $mdDialog.hide(answer);
+    
+    };
+
+    $scope.previewBlogAsIonize=function(previewcontent){
+                      var confirm = $mdDialog.confirm()
+                          .title('Are You sure Your Work is Done?')
+                                    .ok('Yes')
+                                    .cancel('No'); 
+                          $mdDialog.show(confirm).then(function() {
+                                var date=new Date();
+                                var dataObject={
+                                  'title':$rootScope.title,
+                                  'content':previewcontent,
+                                  'blog_id':$stateParams.blogId,
+                                  'modified':today_date.getFullYear()+"-"+(today_date.getMonth()+1)+"-"+today_date.getDate(),
+                                  'state':'ionize',
+                                  //'userid':sessionStorage.USER_ID
+                                }
+                          
+                           commonService.ionizetheBlog(dataObject).then(function(success){
+                               $mdDialog.show($mdDialog.alert()
+                                .parent(angular.element(document.querySelector('#popupContainer')))
+                                .clickOutsideToClose(true)
+                                .textContent("Blog Is Done successfully. You may get Approval or Rewrite the blog from the Main Editor.")
+                                .ok('Ok')
+                                .targetEvent()
+                            ).then(function() {
+                                      $state.go("app.ui.myblogs");
+                            }, function() {
+                            });
+                                
+                            },function(fail){
+                              console.log(fail);
+                              $mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent('Your Blog Is Not Done. Please Check Your Internet Connection And Then Contact Medicodesk.')
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    )
+                            })
+                        },function() {
+                          
+                        });        
+              }
+  }
+
+
+  $scope.onFileClick = function(obj,idx){
+                    console.log(obj);
+
+                };
+  $scope.onFileRemove = function(obj,idx){
+      console.log(obj);
+  }
+  $scope.fileNameChanged = function(files) {
+  console.log(files);
+}
+
+    }]);
+
+    </script>
+
+
+</head>
+<body >
+  
+            <div ng-controller="demoController" class="ng-scope" ng-init="app.settings.pagetitle = 'ASSIGNED IONIZE BLOGS';">
+                <br>
+                <div class="container lighter" style="width:100%;height: auto;background-color: white;" ng-show="category==4 ||category==20">
+                    <p ng-if="keywords!=null">keywords : {{keywords}}</p> 
+                    <h5>Title Of The Blog</h5>
+                    <b><input type="text" ng-model="title" style="width: 100%;"></b>
+                    <br>
+                    <!--<text-angular-toolbar name="toolbar1" class="toolbar" ta-toolbar="[['h1','h2','h3','h4','h5','h6','p','pre','quote','bold','italics','underline','insertLink','html']]"></text-angular-toolbar>
+                -->
+                 <!-- <text-angular-toolbar name="toolbar1" class="toolbar" ta-toolbar="[['h1','h2','h3','p','quote','bold','italics','underline','ul','ol','justifyLeft', 'justifyCenter', 'justifyRight','justifyFull','insertLink','html','insertPhoto']]"></text-angular-toolbar>
+                            <text-angular ng-model="htmlContent" ta-target-toolbars='toolbar1' class="test" ng-change="contentChange(htmlContent)" ta-file-drop="dropHandler">
+                            </text-angular> -->
+                            <br>
+                            <textarea froala="froalaOptions" ng-model="htmlContent" ng-change="contentChange(htmlContent)"></textarea>
+
+
+                             <button type="button" class="form-submit ion-action btn btn-success" style="font-family: 'Opensans light', sans-serif;font-size: 16px;margin-top: 10px;background-color: rgb(51, 204, 204);margin-left:30px;" ng-click="preview()">Preview</button>  
+                            <button ng-click="saveAsDraft(htmlContent)" type="button" class="form-submit ion-action btn btn-success" style="font-family: 'Opensans light', sans-serif;font-size: 16px;margin-top: 10px;background-color: rgb(51, 204, 204);">Save As Draft</button>     
+                            <button ng-show="graphic_designer==0" ng-click="sendBlogToGraphicDesigner(htmlContent)" class="form-submit ion-action btn btn-success" style="font-family: 'Opensans light', sans-serif;font-size: 16px;margin-top: 10px;background-color: rgb(51, 204, 204);"><i class="fa fa-arrow-right" aria-hidden="true"></i> Graphic Designer</button>
+                            <button ng-click="saveBlogAsIonize(htmlContent)" ng-show="graphic_designer==0||graphicStatus==6" class="form-submit ion-action btn btn-success" style="font-family: 'Opensans light', sans-serif;font-size: 16px;margin-top: 10px;background-color: rgb(51, 204, 204);">I'M Done ! Send To Editor</button>
+                        <br>
+                        <br>
+                        <div class="col-lg-12 imgsize" ng-if="pic.length>0"> 
+                           <h2 style="color: #455A64;text-shadow: 2px 2px rgba(100, 100, 100, 0.1);text-transform: uppercase;"><b>Attached Images</b></h2>
+                        <img ng-repeat="item in pic" ng-src="{{item.img}}" class="setImageSize" style="padding-left: 21px;" ng-click="getfullviewimg(item.img)">
+                        </div>
+                       <div ng-include="'partials/comments/commentslist.html'"></div>
+                  </div>
+                      
+          </div>
+</body>
+</html>
+  
+  <script type="text/ng-template" id="dialog1.tmpl.html"><md-dialog aria-label="Images">
+  <form>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Images</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+    <md-dialog-content style="width: 700px;">
+      <md-tabs md-dynamic-height md-border-bottom>
+        <md-tab label="My Images">
+          <md-content class="md-padding">
+          
+                I tried injecting $transition$ and $state into the test function, but I get unknown provider errors when I do that. I've updated the plunk to inject $transition$, so the error can be seen. I've been going off of the documentation at http://angular-ui.github.io/ui-router/feature-1.0/interfaces/transition.ihookregistry.html, but it's not clear where the $transitions object used in the examples comes from. I assume it's using '$transitions' to inject it, since that does returns a TransitionService, but that's not working for some reason.
+
+          </md-content>
+        </md-tab>
+        <md-tab label="Upload">
+          <md-content class="md-padding">
+             <input type="file" accept="image/*;capture=camera" file-model="myFile" id="imagefile"/></input>
+                            <input type="hidden" name="imageName" id="imageName"/>
+                            <div id="content"></div>
+                        <!--<input type="submit" ng-click="submitImage(myFile)"></input>-->
+            <!--<h1 class="md-display-2">Tab Two</h1>-->
+          
+          </md-content>
+        </md-tab>
+        <!--<md-tab label="three">
+          <md-content class="md-padding">
+            <h1 class="md-display-2">Tab Three</h1>
+            
+          </md-content>
+        </md-tab>-->
+      </md-tabs>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+     
+      <span flex></span>
+      <md-button ng-click="answer('not useful')" >
+        Cancel
+      </md-button>
+      <md-button ng-click="answer(myFile)" style="margin-right:20px;" >
+        Save
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
+</script>
+
+
+
+<!--upload cover image-->
+<style>
+
+  .fr-toolbar.fr-top{
+    top:20px!important;
+  }
+  .js .inputfile {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.inputfile + label {
+    width: 100%;
+    font-size: 1.70rem;
+    /* 20px */
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    display: inline-block;
+    overflow: hidden;
+    padding: 0.625rem 1.30rem;
+    text-align: center;
+    border-radius: 2px;
+    /* 10px 20px */
+}
+
+.no-js .inputfile + label {
+    display: none;
+}
+
+.inputfile:focus + label,
+.inputfile.has-focus + label {
+    outline: 1px dotted #000;
+    outline: -webkit-focus-ring-color auto 5px;
+}
+
+.inputfile + label * {
+    /* pointer-events: none; */
+    /* in case of FastClick lib use */
+}
+
+.inputfile + label svg {
+    
+    vertical-align: middle;
+    fill: currentColor;
+    margin-top: -0.25em;
+    /* 4px */
+    margin-right: 0.25em;
+    /* 4px */
+}
+
+.inputfile-1 + label {
+    color: white;
+    background-color: rgb(51, 204, 204);
+}
+.inputfile-1:focus + label,
+.inputfile-1.has-focus + label,
+.inputfile-1 + label:hover {
+    background-color: rgb(51, 204, 204);
+}
+
+
+
+</style>
+<script type="text/javascript">
+  
+;( function ( document, window, index )
+{
+  var inputs = document.querySelectorAll( '.inputfile' );
+  Array.prototype.forEach.call( inputs, function( input )
+  {
+    var label  = input.nextElementSibling,
+      labelVal = label.innerHTML;
+
+    input.addEventListener( 'change', function( e )
+    {
+      var fileName = '';
+      if( this.files && this.files.length > 1 )
+        fileName = ( this.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', this.files.length );
+      else
+        fileName = e.target.value.split( '\\' ).pop();
+
+      if( fileName )
+        label.querySelector( 'span' ).innerHTML = fileName;
+      else
+        label.innerHTML = labelVal;
+    });
+
+    // Firefox bug fix
+    input.addEventListener( 'focus', function(){ input.classList.add( 'has-focus' ); });
+    input.addEventListener( 'blur', function(){ input.classList.remove( 'has-focus' ); });
+  });
+}( document, window, 0 ));
+</script>
+<!-- remove this if you use Modernizr -->
+    <script>(function(e,t,n){var r=e.querySelectorAll("html")[0];r.className=r.className.replace(/(^|\s)no-js(\s|$)/,"$1js$2")})(document,window,0);</script>
+
+
+
+<script type="text/ng-template" id="fullimage.html">
+   <md-dialog aria-label="" style="min-width: auto;">
+  <form ng-cloak>
+   
+<md-dialog-actions layout="row">
+     
+      <span flex></span>
+      <md-button ng-click="cancel()">
+       Close
+      </md-button>
+     
+    </md-dialog-actions>
+    <md-dialog-content>
+      <div class="md-dialog-content">
+      
+        <img style="margin: auto; max-width: 100%;" alt="" src="{{fullviewimg}}">
+      </div>
+    </md-dialog-content>
+
+    
+  </form>
+</md-dialog>
+</script>
+
+<script type="text/ng-template" id="preview.html">
+   <md-dialog aria-label="" style="min-width: auto;">
+  <form ng-cloak>
+   
+ <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2 style="color: white;">{{previewtitle}}</h2>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+      <div class="md-dialog-content">
+         <p ng-bind-html="previewcontent"></p>
+      </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+     
+      <span flex></span>
+      <md-button ng-click="cancel()">
+       Close
+      </md-button>
+
+      <md-button style="background-color: #33cccc;color: white;" ng-click="previewBlogAsIonize(previewcontent)" >I'M Done ! Send To Editor</md-button>
+     
+    </md-dialog-actions>
+
+    
+  </form>
+</md-dialog>
+</script>

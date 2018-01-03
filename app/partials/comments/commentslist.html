@@ -1,0 +1,94 @@
+<div ng-controller="commentCtrl"> 
+<div id="comments"> 
+            <h3 ng-if="comments.length>0">Comments</h3>
+            <div class="well comment-block level-1" style="display:flex;" ng-repeat="comment in comments">
+                <div class="col-md-1 col-sm-2 col-xs-3 img-area">
+                    <img src="{{comment.image}}" style="width:100%;height:70px;">
+                </div>
+                <div class="col-md-11 col-sm-10 col-xs-9">
+                    <h5><i class="icon-user"></i>&nbsp;By <span style="color: #337ab7 !important;">{{comment.username}}&nbsp;
+                    <span ng-if="comment.groupid==4"> @Content Writer</span>
+                    <span ng-if="comment.groupid==20"> @Content Editor</span>
+                    <span ng-if="comment.groupid==19"> @Graphic Designer</span>
+                    <span ng-if="comment.groupid==22"> @Relation Manager</span>
+                    </span> on {{comment.date}}.</h5>
+                    <div>
+                        <p>{{comment.comment}}</p>
+                    </div>
+            
+                </div>
+                <br>
+            </div>
+    </div>
+        <br><h3>Leave a Comment</h3>
+                            <form class="form row" name="commentform">
+                                <div class="form-group col-xs-9">
+                                    <label class="form-label" for="inputComment">Comment</label>
+                                    <div class="controls">
+                                        <textarea class=" form-control col-md-12" ng-model="comment" id="inputComment" rows="6" style="border: 2px solid #e1e1e1;background-color: #ffffff;" required></textarea>
+                                       
+                                        <!-- <checkbox ng-model="commentvalue" ng-click="commentcheck()" style="margin-top: 10px;" >Public
+                                             </checkbox> -->
+                                         <md-checkbox ng-click="commentcheck()" ng-checked="isChecked">Public
+                                            </md-checkbox>
+                                       
+                                    </div>
+                                     
+                                </div>
+                                <div class="form-group col-xs-9 margin-bottom-0">
+                                    <div class="controls action">
+                                        <button type="submit" class="btn btn-primary" style="background-color: #33cccc;" ng-click="postComment(comment)" ng-disabled="commentform.$invalid || buttonDisable">Post Comment</button>
+                                    </div>
+                                </div>
+                            </form>
+</div>
+                            <script>
+                                
+    app.controller("commentCtrl",function($state,$stateParams,$http,$scope,$rootScope,commonService,$base64){
+        
+    //1 not shown to the doctors
+//0 shown to the doctors
+    $scope.commentcheck=function(){
+        if($scope.commentvalue==1)
+        {
+            $scope.isChecked=true;
+            $scope.commentvalue=0;
+        }
+        else{
+            $scope.isChecked=false;
+            $scope.commentvalue=1;
+        }
+    }
+    
+    $scope.commentvalue=1;
+    $scope.isChecked=false;
+    commonService.getBlogComments($stateParams.blogId).then(function(success){
+                        $scope.comments=success.data.description;
+                        },function(error){
+                            console.log(error);
+                    });
+    $scope.postComment=function(comment){
+                console.log($scope.commentvalue);
+                 $scope.buttonDisable=true;
+                 commonService.postComment($stateParams.blogId,comment,$scope.commentvalue).then(function(success){
+                    $scope.comment="";
+                    $scope.buttonDisable=false;
+                    commonService.getBlogComments($stateParams.blogId).then(function(success){
+                        $scope.comments=success.data.description;
+                        $scope.commentvalue=1;
+                        if($scope.isChecked)
+                        {
+                            $scope.isChecked=false;
+                        }
+                    },function(error){
+                        console.log(error);
+                    });
+                },function(error){
+                    console.log(error);
+                })
+            }
+
+
+ 
+    })
+    </script>

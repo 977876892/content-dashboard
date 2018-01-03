@@ -1,0 +1,473 @@
+<style>
+   img{
+      max-width: 100%;
+     }
+      h3{
+            font-size: 16px;
+            color: #404040;
+            font-family: 'Opensans regular';
+        }
+</style>
+<div class='content-wrapper' ng-init="app.settings.pagetitle = 'Ionized Blog Post';" ng-controller="blogItemForIonizedCtrl">
+    <div class="col-lg-12">
+        <section class="box ">
+            <header class="panel_header">
+                <h2 class="title pull-left">Ionized Blog Post</h2>
+            </header>
+            <div class="content-body padding-bottom-30">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <!-- start -->
+                        <div class="blog_post full_blog_post">
+                            <h3 style="color:#33cccc" class="ng-binding">{{title}}</h3>
+                            <img ng-src="{{coverimage}}" ng-show="coverimage!=''&& coverimage!=defaultCoverImage"/>
+                            <div class="blog-content"><p ng-bind-html="content" style="word-wrap: break-word;"></p></div><hr>
+                             <a ng-click="openEditorView(blogid)"  class="btn btn-primary" style="background:#33cccc" ng-hide="login_category==22"><span>Edit</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a> 
+                               
+                               
+
+                             <!--comments code-->
+    <div id="comments"> 
+            <h3 ng-if="comments.length>0">Comments</h3>
+            <div class="well comment-block level-1" style="display:flex;" ng-repeat="comment in comments">
+                <div class="col-md-1 col-sm-2 col-xs-3 img-area">
+                    <img src="data/profile/avatar-1.png">
+                </div>
+                <div class="col-md-11 col-sm-10 col-xs-9">
+                    <h5><i class="icon-user"></i>&nbsp;By <a>{{comment.username}}</a> on {{comment.date}}.</h5>
+                    <div>
+                        <p>{{comment.comment}}</p>
+                    </div>
+            
+                </div>
+            </div>
+    </div>
+ <div class="clearfix"></div>
+    <br>
+    <!--<h3>Leave a Comment</h3>
+                            <form class="form row">
+                               
+                                <div class="form-group col-xs-9">
+                                    <label class="form-label" for="inputComment">Comment</label>
+                                    <div class="controls">
+                                        <textarea class=" form-control col-md-12" ng-model="comment" id="inputComment" rows="6" style="border: 2px solid #e1e1e1;"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xs-9 margin-bottom-0">
+                                    <div class="controls action">
+                                        <button type="submit" class="btn btn-primary" style="background-color: #33cccc;" ng-click="postComment(comment)">Post Comment</button>
+                                    </div>
+                                </div>
+                            </form>-->
+                              <!--comments code-->
+                        </div>
+                        <!-- end -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+<script>
+    
+    app.controller("blogItemForIonizedCtrl",function($state,$stateParams,$http,$scope,$rootScope,$base64,$mdDialog,commonService){
+       if(sessionStorage.username=="" || sessionStorage.username == undefined){
+				$state.go("access.login");
+	}
+	else{ 
+        $rootScope.login_category=sessionStorage.category;
+        commonService.blogFullView($stateParams.blogId).then(function(success){
+            $scope.ionizedBlog=success.data.description;
+            $scope.content=success.data.description.content;
+            $scope.title=success.data.description.title;
+            $scope.coverimage=success.data.description.coverimage;
+            $scope.blogid=$stateParams.blogId;
+        });
+        // commonService.getBlogComments($stateParams.blogId).then(function(success){
+        //     $scope.comments=success.data.description;
+        // },function(error){
+        //     console.log(error);
+        // })
+      
+    
+    }
+    $scope.spelling=false;
+	$scope.content=false;
+	$scope.imagesArrange=false;
+	$scope.enableSubmit=true;
+	$scope.AllAreCorrent=function(spelling,content,imagesArrange){
+		
+		if(spelling && content && imagesArrange)
+		{
+			$scope.enableSubmit=false;
+		}
+		else{
+			$scope.enableSubmit=true;
+		}
+	}
+    // $scope.postComment=function(comment){
+    //     commonService.postComment($stateParams.blogId,comment).then(function(success){
+    //     $scope.comment="";
+    //       commonService.getBlogComments($stateParams.blogId).then(function(success){
+    //             $scope.comments=success.data.description;
+    //         },function(error){
+    //             console.log(error);
+    //         })
+    //     },function(error){
+    //         console.log(error);
+    //     })
+    // };
+   
+        $scope.rejectBlog=function(item){
+                $scope.rejectBlogItem=$scope.ionizedBlog;
+            			$mdDialog.show({
+				controller: DialogController,
+				templateUrl: 'rejectTemplate.html',
+				clickOutsideToClose:true,
+				//fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+				})
+				.then(function(answer) {
+				$scope.status = 'You said the information was "' + answer + '".';
+				}, function() {
+				$scope.status = 'You cancelled the dialog.';
+				});
+	}		
+    function rejectApicall(comment,content,graphic){
+                var item=$scope.rejectBlogItem;
+        		var date=new Date();
+					var dataObject={
+					}
+                    if(content==true&&graphic==true){
+						dataObject={
+							//'title':item.title,
+							//'content':item.content,
+							'blog_id':$stateParams.blogId,
+							'state':'reject'
+							//'group_id':sessionStorage.category
+						}
+					}
+					else if(content==true&&graphic==false){
+						dataObject={
+							'blog_id':$stateParams.blogId,
+							'state':'reject',
+							'group_id':4
+						}
+					}
+					else{
+						dataObject={
+							'blog_id':$stateParams.blogId,
+							'state':'reject',
+							'group_id':19
+						}
+					}	
+				commonService.rewriteTheBlog(dataObject).then(function(success){
+                    commonService.postComment($stateParams.blogId,comment).then(function(success){
+                              $mdDialog.show(
+                                  $mdDialog.alert()
+                                    .parent(angular.element(document.querySelector('#popupContainer')))
+                                    .clickOutsideToClose(true)
+                                    .textContent("Blog Send to Rewrite successfully")
+                                    .ok('Ok')
+                                    .targetEvent()
+                                ).then(function() {
+                                        $state.go("app.ui.ionizedBlogs");
+                                }, function() {
+                                });
+                            },function(error){})
+				},function(fail){
+                     $mdDialog.show(
+                                  $mdDialog.alert()
+                                    .parent(angular.element(document.querySelector('#popupContainer')))
+                                    .clickOutsideToClose(true)
+                                    .textContent("Blog Rewrite failed please contact medicodesk")
+                                    .ok('Ok')
+                                    .targetEvent()
+                                ).then(function() {
+                                      //  $state.go("app.ui.ionizedBlogs");
+                                }, function() {
+                                });
+				})
+    }
+	$scope.approveBlogs=function(item){
+                
+                 $scope.approveBlogItem=$scope.ionizedBlog;
+            			$mdDialog.show({
+                                controller: ApproveDialogController,
+                                templateUrl: 'approveTemplate.html',
+                                clickOutsideToClose:true,
+                                //fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+                                })
+                                .then(function(answer) {
+                                $scope.status = 'You said the information was "' + answer + '".';
+                                }, function() {
+                                $scope.status = 'You cancelled the dialog.';
+                            });
+	}		
+    function ApproveApiCall(){
+        //console.log($rootScope.finalrating);
+        
+                    var item=$scope.approveBlogItem;
+                    var elem= document.createElement("div");
+                    elem.innerHTML =$scope.approveBlogContent;
+                    var images = elem.getElementsByTagName("img");
+                    for(var i=0;i<=images.length-1;i++)
+                    {
+                        var position=elem.innerHTML.lastIndexOf(images[i].currentSrc)+images[i].currentSrc.length;
+                        elem.innerHTML =  elem.innerHTML.slice(0, position+1)+ "alt='load image...'" +elem.innerHTML.slice(position+1);
+                        //console.log(elem.innerHTML);
+                    }
+                    var content=elem.innerHTML;
+					var today_date=new Date();
+					var dataObject={
+						'title':item.title,
+						'content':content,
+						'blog_id':$stateParams.blogId,
+                        'coverimage':item.coverimage,
+						'modified':today_date.getFullYear()+"-"+(today_date.getMonth()+1)+"-"+today_date.getDate(),
+                        'key':sessionStorage.key
+					}
+                console.log(dataObject);
+				commonService.approveTheBlog(dataObject).then(function(success){
+                    commonService.rateTheBlog($stateParams.blogId,$rootScope.finalContentrating,$rootScope.finalGraphicRating).then(function(success){
+                         $mdDialog.show(
+                                  $mdDialog.alert()
+                                    .parent(angular.element(document.querySelector('#popupContainer')))
+                                    .clickOutsideToClose(true)
+                                    .textContent("Blog is posted to related doctor is successfully.")
+                                    .ok('Ok')
+                                    .targetEvent()
+                                ).then(function() {
+                                    $state.go("app.ui.ionizedBlogs");
+                                }, function() {
+                                });
+                    },function(error){});
+				},function(fail){
+					console.log(fail);
+				})
+
+    }
+            
+        function DialogController($scope, $mdDialog) {
+            $scope.rewriteToContentWriter=false;
+			$scope.rewriteToGraphicDesigner=false;
+			$scope.enableSubmit=true;
+            $scope.cancel=function(){
+                $mdDialog.hide();
+            }
+            $scope.answer = function(answer) {
+            //console.log(answer);
+            $mdDialog.hide(answer);
+            
+            };
+            	$scope.commentChange=function(content,graphic,comment){
+	
+				if((comment!='' && typeof comment!='undefined')&&(content||graphic))
+				{
+					$scope.enableSubmit=false;
+				}
+				else{
+					$scope.enableSubmit=true;
+				}
+
+			}
+			$scope.contentChange=function(rewriteToContentWriter){
+				if(($scope.comment!=''&& typeof $scope.comment!='undefined')&&($scope.rewriteToContentWriter||$scope.rewriteToGraphicDesigner))
+				{
+					$scope.enableSubmit=false;
+				}
+				else{
+					$scope.enableSubmit=true;
+				}
+				$scope.rewriteToContentWriter=rewriteToContentWriter;
+			}
+			$scope.graphicChange=function(rewriteToGraphicDesigner){
+				if(($scope.comment!='' && typeof $scope.comment!='undefined')&&($scope.rewriteToContentWriter||$scope.rewriteToGraphicDesigner))
+				{
+					$scope.enableSubmit=false;
+				}
+				else{
+					$scope.enableSubmit=true;
+				}
+				$scope.rewriteToGraphicDesigner=rewriteToGraphicDesigner;
+			}
+            $scope.postComment = function(comment) {
+            rejectApicall(comment);
+            $mdDialog.hide();
+            };
+        }
+    $scope.openEditorView=function(blogid){
+        console.log(blogid);
+        $state.go('app.form.textAngularForReview',{blogId:blogid,c:1});
+       }
+         function ApproveDialogController($scope, $mdDialog) {
+            // $scope.cancel=function(){
+            //     $mdDialog.hide();
+            // }
+            $scope.answer = function(answer) {
+            //console.log(answer);
+            $mdDialog.hide(answer);
+            
+            };
+            $scope.ApproveBlog = function(comment) {
+            ApproveApiCall();
+            $mdDialog.hide();
+            
+            };
+        }
+        $scope.rating = 1;
+        $rootScope.finalContentrating=$scope.rating;
+        $scope.contentRateFunction = function(rating) {
+            //$rootScope.rating=rating;
+            $rootScope.finalContentrating=rating;
+           // console.log($rootScope.finalContentrating);
+        };
+        $scope.ratinggraphic = 1;
+        //$rootScope.finalrating=$scope.graphicRate;
+        $scope.graphicRateFunction = function(ratinggraphic) {
+            //$rootScope.rating=rating;
+            
+            $rootScope.finalGraphicRating=ratinggraphic;
+           // console.log($rootScope.finalGraphicRating);
+        };
+	
+    })
+    </script>
+      <script type="text/ng-template" id="rejectTemplate.html"><md-dialog aria-label="Images">
+  <form name="commentform">
+    <md-toolbar>
+      <div class="md-toolbar-tools" style="background:#33cccc;">
+        <h2 style="color: white;">Rewrite Blog</h2>
+        <span flex></span>
+        <!--<md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+        </md-button>-->
+      </div>
+    </md-toolbar>
+    <md-dialog-content style="width: 700px;">
+        <textarea ng-model="comment" placeholder="Post Your Comment" style="width: 96%;margin: 10px;border: 1px solid rgba(0, 0, 0, 0.2);height: 101px;" ng-change="commentChange(rewriteToContentWriter,rewriteToGraphicDesigner,comment)"></textarea>
+     <md-switch class="md-primary" style="float: left;width:50%;margin-left:15px;" ng-model="rewriteToContentWriter" ng-change="contentChange(rewriteToContentWriter,comment)">
+          Content Writer
+        </md-switch>
+    <md-switch class="md-primary"  ng-model="rewriteToGraphicDesigner" style="float: left;" ng-change="graphicChange(rewriteToGraphicDesigner,comment)">
+          Graphic Designer
+        </md-switch>
+       
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+     
+      <span flex></span>
+      <md-button ng-click="answer('not useful')" >
+        Cancel
+      </md-button>
+      <md-button ng-click="postComment(comment,rewriteToContentWriter,rewriteToGraphicDesigner)" style="margin-right:20px;" ng-disabled="enableSubmit">
+        submit
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
+<style>
+ md-switch.md-default-theme.md-checked.md-primary .md-thumb, md-switch.md-checked.md-primary .md-thumb{background-color:#33cccc;}
+ md-switch.md-default-theme.md-checked.md-primary .md-bar, md-switch.md-checked.md-primary .md-bar {
+    background-color: rgb(165, 232, 232);
+}
+</style>
+</script>
+  <script type="text/ng-template" id="approveTemplate.html"><md-dialog aria-label="Images" ng-controller="blogItemForIonizedCtrl">
+  <form>
+    <md-toolbar>
+      <div class="md-toolbar-tools" style="background:#33cccc;">
+        <h2 style="color: white;">Approve Blog</h2>
+        <span flex></span>
+        <!--<md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+        </md-button>-->
+      </div>
+    </md-toolbar>
+    <md-dialog-content style="width: 700px;">
+        <md-checkbox ng-model="spelling" ng-change="AllAreCorrent(spelling,content,imagesArrange)" style="margin-top: 10px;margin-left: 200px;" >All spelling are correct.
+            </md-checkbox>
+             <md-checkbox ng-model="content" ng-change="AllAreCorrent(spelling,content,imagesArrange)" style="margin-top: 10px;margin-left: 200px;" >Content is properly arranged.
+            </md-checkbox>
+             <md-checkbox ng-model="imagesArrange" ng-change="AllAreCorrent(spelling,content,imagesArrange)" style="margin-top: 10px;margin-left: 200px;" >All images are properly arranged.
+            </md-checkbox> <br>
+            <!--<div class="row">
+                <div class="col-50">
+        <p style="text-align: center;margin: 0 0 -10px;"> Content Writer Rating</p>
+         <span class="star-rating" star-rating rating-value="rating" style="font-size: 20px;text-align: center;" data-max="5" on-rating-selected="rateFunction(rating)"></span>
+                </div>
+                <div class="col-50">
+        <p style="text-align: center;margin: 0 0 -10px;"> Content Writer Rating</p>
+         <span class="star-rating" star-rating rating-value="rating" style="font-size: 20px;text-align: center;" data-max="5" on-rating-selected="rateFunction(rating)"></span>
+                </div>
+     -->
+
+    <div class="left">
+        <p style="text-align: center;margin: 0 0 -10px;"> Content Writer Rating</p>
+         <p class="star-rating" star-rating rating-value="rating" style="font-size: 20px;text-align: center;" data-max="5" on-rating-selected="contentRateFunction(rating)"></p>
+               
+    </div>
+    
+    <div class="right">
+       <p style="text-align: center;margin: 0 0 -10px;"> Graphic Designer Rating</p>
+         <p class="star-rating" star-rating-graphic rating-value="ratinggraphic" style="font-size: 20px;text-align: center;" data-max="5" on-rating-selected="graphicRateFunction(ratinggraphic)"></p>
+                
+    </div>
+    
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+     
+      <span flex></span>
+      <md-button ng-click="answer('not useful')" >
+        Cancel
+      </md-button>
+      <md-button ng-click="ApproveBlog()" style="margin-right:20px;" ng-disabled="enableSubmit">
+        submit
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
+<style type="text/css">
+        .rating{
+  color: #a9a9a9;
+  margin: 0;
+  padding: 10px;
+}
+
+ul.rating {
+  display: inline-block;
+}
+
+.rating li {
+  list-style-type: none;
+  display: inline-block;
+  padding: 1px;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.rating .filled {
+  color: #33cccc;
+}
+  
+     
+.left, .center, .right{
+    float:left;
+    width:50%;
+    padding:5px;
+
+}
+    </style>
+</script>
+
+<style>
+
+    .blog-content img{
+        height:inherit !important;
+    }
+</style>
+

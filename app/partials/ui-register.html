@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.0/css/materialize.min.css'>
+    <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/icon?family=Material+Icons'>
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>-->
+
+
+    <style>
+        /* Downloaded from http://www.codeseek.co/ */
+        
+        body {
+            min-height: 100%;
+            background-color: #33cccc;
+        }
+        html{
+            background-color:#33cccc;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+       
+
+        .space-bot {
+            margin-bottom: 35px;
+        }
+        
+        .space-top {
+            margin-top: 35px;
+        }
+        /* Title */
+        
+        h1 {
+            color: #404040;
+            font-family: 'Roboto';
+            text-transform: uppercase;
+            font-weight: 900;
+            font-size: 25px;
+            text-align: center;
+            text-shadow:6px 6px 5px #ddd;
+        }
+        /* Sign Up */
+        
+        .container {
+            max-width: 500px;
+            max-height: 100px;
+            margin-top: 10px;
+            
+        }
+        
+        .alert-danger {
+            text-align: center;
+        }
+        
+        .signup-screen {
+            padding: 20px;
+            padding-bottom: 40px;
+            border-radius: 5px;
+            background-color: white;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, .3);
+            color: #757575;
+        }
+        
+        .btn {
+            border-radius: 2px;
+        }
+        
+        .cancel {
+            background-color: #df405a;
+        }
+        
+        .done {
+            background-color: #5CAB7D;
+        }
+        
+        .done:hover {
+            background-color: #6dc793;
+        }
+        
+        .done:focus {
+            background-color: #6dc793;
+        }
+        
+        .cancel:hover {
+            background-color: #f0435f;
+        }
+        
+        .cancel:focus {
+            background-color: #f0435f;
+        }
+        
+        .input-group {
+            width: 100%;
+        }
+        
+        .input-group .ng-invalid {
+            border: 2px solid #e74c3c;
+            border-radius: 3px;
+        }
+       
+        /* Error Box */
+        
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 2px;
+            border-color: #e85a71;
+            background-color: #e85a71;
+            color: white;
+        }
+        
+        .help-block {
+            font-size: 12px;
+            color: white
+        }
+        input[type=text], input[type=password], input[type=email],input[type=number]
+        {
+            border-bottom: 1px solid #33cccc;
+        }
+        textarea[type=text]{
+            border: 1px solid #33cccc;
+        }
+        textarea[type=text]:focus{
+            border: 1px solid #26a69a !important;
+            box-shadow: 0 1px 0 0 #26a69a !important;
+        }
+         .input-field label.active{
+            font-size: 14px;
+           color: #26a69a;
+
+        }
+        
+    </style> 
+    <script>
+        //var app = angular.module("app", []);
+        app.controller("RegisterCtrl", function($scope,$http,$mdDialog,$cookies) {
+           $scope.reset=function(item){
+            $scope.item="";
+           }
+           $scope.submit=function(item){
+          // console.log($cookies.get("ION_SERVER")+"/index.php/request?action=newuser&module=ionize&resource=posts&firstname="+item.fname+"&email="+item.email+"&phone="+item.phone_nu+"&exp="+item.exp+"&role="+item.role+"&skills="+item.skills+"&overview="+item.about+"&lastname="+item.lname+"&job_type=Freelancer");
+                $http.get($cookies.get("ION_SERVER")+"/index.php/request?action=newuser&module=ionize&resource=posts&firstname="+item.fname+"&email="+item.email+"&phone="+item.phone_nu+"&exp="+item.exp+"&role="+item.role+"&skills="+item.skills+"&overview="+item.about+"&lastname="+item.lname+"&job_type=Freelancer")
+                .then(function(success){
+                    console.log(success);
+                    $scope.msg=success.data.description;
+                    console.log($scope.msg);
+                    if($scope.msg == "email already exists"){
+                       $mdDialog.show(
+                                $mdDialog.alert()
+                                .parent(angular.element(document.querySelector('#popupContainer')))
+                                .clickOutsideToClose(true)
+                                .textContent('Email Already Exists.')
+                                .ok('Ok')
+                                .targetEvent()
+                            )
+                    }
+                    else{
+                        $mdDialog.show(
+                                $mdDialog.alert()
+                                .parent(angular.element(document.querySelector('#popupContainer')))
+                                .clickOutsideToClose(true)
+                                .textContent('User Added Successfully.')
+                                .ok('Ok')
+                                .targetEvent()
+                            ).then(function() {
+                               $scope.item = "";
+                            });
+                    }
+                },function(error){})
+
+           }
+        });
+    </script>
+</head>
+
+
+    <body ng-app="app">
+        <div class="container" ng-controller="RegisterCtrl">
+            <div id="signup">
+                <div class="signup-screen">
+                    <div class="space-bot text-center">
+                        <img src="img/app_icon_new01.png" style="width: 160px;height: 75px;">
+                        <h1>Registration Form</h1>
+                        <div class="divider"></div>
+                    </div>
+                    <form class="form-register" name="register" novalidate>
+                        <div class="input-field col s6">
+                            <input  type="text" class="validate" ng-model="item.fname" required>
+                            <label for="first-name">First Name</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input id="last-name" type="text" class="validate" ng-model="item.lname" required>
+                            <label for="last-name">Last Name</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input id="email" type="email" name="email" ng-model="item.email" class="validate" required>
+                            <label for="email">Email</label>
+                        </div>
+                        <p class="alert alert-danger" ng-show="form-register.email.$error.email">Your email is invalid.</p>
+                        <div class="input-field col s6">
+                            <input id="phone_nu" type="number" name="phone_nu" ng-model="item.phone_nu" ng-minlength='10' class="validate" required>
+                            <label for="phone">Phone</label>
+                        </div>
+                        <p class="alert alert-danger" ng-show="form-register.phone_nu.$error.minlength || form.phone_nu.$invalid">Your phone number must be 10 characters.</p>
+
+                        <div class="input-field col s6">
+                            <input id="exp" type="text" name="exp" ng-model="item.exp" class="validate" required>
+                            <label for="exp">Experience</label>
+                        </div>
+
+                        <div class="input-field col s6">
+                            <input id="role" type="text" name="role" ng-model="item.role" class="validate" required>
+                            <label for="role">Role</label>
+                        </div>
+
+                        <div class="input-field col s6">
+                            <input id="skills" type="text" name="skills" ng-model="item.skills" class="validate" required>
+                            <label for="skills">Skills</label>
+                        </div>
+
+                        <div class="input-field col s6">
+                            <textarea id="about" type="text" name="about" ng-model="item.about" class="validate" required></textarea>
+                            <label for="about">About Us</label>
+                        </div>
+
+                        <div class="space-top text-center">
+                            <button ng-disabled="form-register.$invalid" class="waves-effect waves-light btn done" ng-click="submit(item)">
+               <i class="material-icons left">done</i> Submit
+               </button>
+                            <button type="button" class="waves-effect waves-light btn cancel" ng-click="reset(item)">
+               <i class="material-icons left">clear</i>Reset
+               </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    <script src='http://code.jquery.com/jquery-2.1.4.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.0/js/materialize.min.js'></script>
+   
+
+
+
+</body>
+
+</html>

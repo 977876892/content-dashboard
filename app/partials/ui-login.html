@@ -1,0 +1,50 @@
+<div class="login_page">
+<div class="login-wrapper" ng-controller="LoginFormController">
+    <div id="login" class="login loginpage col-lg-offset-4 col-lg-4 col-md-offset-3 col-md-6 col-sm-offset-3 col-sm-6 col-xs-offset-2 col-xs-8">
+        <!--<h1><a href="#" title="Login Page" tabindex="-1">Slant Admin - Angular</a></h1>-->
+        <img src="img/app_icon_new01.png" style="width: 300px;height: 120px;">
+        <form name="form" class="form-validation">
+            
+          <!--<div class="text-danger text-center message" ng-show="authError">
+              {{authError}}
+          </div>-->
+        
+            <p>
+                    <!-- <input type="text" name="email" id="user_login" class="input" ng-model="user.email" placeholder="Username" required/></label> -->
+                     <md-input-container class="md-block"  flex-gt-sm>
+                          <label style="color: grey;"><b>Username</b></label>
+                          <input  ng-model="user.email" required>
+                    </md-input-container>
+            <!-- <input type="password" name="pwd" id="user_login" class="input" ng-model="user.password" placeholder="Password" required/></label> -->
+                     <md-input-container class="md-block"  flex-gt-sm>
+                          <label style="color: grey;"><b>Password</b></label>
+                          <input type="password" ng-model="user.password" required>
+                    </md-input-container>
+          
+
+                            <label class="icheck icheck-white" for="rememberme">
+                                <input type="checkbox" value="forever" name="rememberme" checked id="rememberme">
+                                <i></i> Remember me
+                            </label>
+            </p>
+
+
+    
+            <p class="submit">
+            <button type="submit" ng-click="login(user.email,user.password)" class="btn btn-accent btn-block">Log In</button>
+            </p>
+        </form>
+
+        <p id="nav">
+            <a class="pull-left" ui-sref="access.forgotpwd" title="Password Lost and Found">Forgot password?</a>
+            <a class="pull-right" ui-sref="access.register" title="Sign Up">Sign Up</a>
+        </p>
+
+
+    </div>
+</div> 
+</div>
+
+
+
+

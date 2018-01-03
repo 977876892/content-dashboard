@@ -1,0 +1,480 @@
+<style type="text/css">
+        .imgsize{
+        width: 300px;
+        height: 300px;
+        margin-right: 15px;
+        margin-top: 10px;
+      }
+       
+    img{
+      max-width: 100%;
+     }
+
+      .dialogdemoBasicUsage #popupContainer {
+  position: relative; }
+
+.dialogdemoBasicUsage .footer {
+  width: 100%;
+  text-align: center;
+  margin-left: 20px; }
+
+.dialogdemoBasicUsage .footer, .dialogdemoBasicUsage .footer > code {
+  font-size: 0.8em;
+  margin-top: 50px; }
+
+.dialogdemoBasicUsage button {
+  width: 200px; }
+
+.dialogdemoBasicUsage div#status {
+  color: #c60008; }
+
+.dialogdemoBasicUsage .dialog-demo-prerendered md-checkbox {
+  margin-bottom: 0; }
+  .lf-ng-md-file-input .lf-ng-md-file-input-container .lf-ng-md-file-input-caption{
+    display: none;
+  }
+  .lf-ng-md-file-input .lf-ng-md-file-input-container .md-raised.lf-ng-md-file-input-button.lf-ng-md-file-input-button-brower{
+    width: 100%;
+  }
+ 
+ .content{    
+   
+    line-height: 20px;
+    margin-top: 20px;
+    margin-left: 9px;
+    margin-right:0px;
+    display:inline-block;
+    position:relative;
+}
+
+.content a {
+    position:absolute;
+    bottom:5px;
+    right:28px;
+    top: 20px;
+    /*background:blue;*/
+    color:#FFF;
+}
+
+    </style>
+<div class='content-wrapper' ng-init="app.settings.pagetitle = 'Single Blog Post';" ng-controller="blogItemForGraphicCtrl" >
+    <div class="col-lg-12" >
+        <section class="box ">
+            <header class="panel_header">
+                <h2 class="title pull-left">Single Blog Post</h2>
+            </header>
+            <div class="content-body padding-bottom-30">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <!-- start -->
+                        <div class="blog_post full_blog_post">
+    
+                            <div>
+                                <h3 style="color:#33cccc">{{title}}</h3>
+                            </div>
+
+                             <div style="display:inline-block;float:right;" ng-if="contentStatus==4&&graphicStatus==5">
+                                 <button type="submit" class="btn btn-primary" style="background-color: #33cccc;" ng-click="saveBlogAsIonize()">Ionize</button>
+                             </div>
+                             
+                            <img ng-src="{{coverimage}}" ng-show="coverimage!=''&& coverimage != defaultCoverImage" ng-dblclick="deleteCoverImage()"/>
+                            <div class="blog-content"><p ng-bind-html="content" style="word-wrap: break-word;"></p></div>
+                        </div>
+                        <!-- end -->
+                        <input type="text" ng-model="driver_link" placeholder="Insert Drive Link">
+                        <button ng-click="driverlink(driver_link)">Submit</button>
+                        <br>
+                      <a target="_blank" ng-href="{{drive}}">{{drive}}</a>
+                        <div layout-padding flex>
+                                    <md-content>
+                                        <lf-ng-md-file-input lf-files="filesOnUploadCover" lf-on-file-click="onFileClick" lf-on-file-remove="onFileRemove" lf-api="api999" preview drag multiple lf-drag-and-drop-label="Drag Cover Image Here"></lf-ng-md-file-input>
+                                    </md-content>
+
+                        </div>
+                          <button type="submit" class="btn btn-primary" style="background-color: #33cccc;" ng-click="uploadCoverImage(uploadCover)" ng-disabled="disableCoverImageButton">Upload Cover Image</button>
+                        <!--<input type="button" value="Upload Cover Image " ></input>-->
+                        <hr style="border-top: 1px solid rgba(0,0,0,0.87);">
+                        <!--image drag and drop-->
+                        <div layout-padding flex>
+                                    <md-content>
+                                        <lf-ng-md-file-input lf-files="filesOnFileClick" lf-on-file-click="onFileClick" lf-on-file-remove="onFileRemove" lf-api="api999" preview drag multiple lf-drag-and-drop-label="Drag Content Image Here"></lf-ng-md-file-input>
+                                    </md-content>
+
+                        </div>
+                         <!--image drag and drop-->
+                        <!--<input type="file" accept="image/*;capture=camera" file-model="myFile" id="imagefile"/></input>
+                            <input type="hidden" name="imageName" id="imageName"/>
+                            <div id="content"></div>-->
+                             <button type="submit" class="btn btn-primary" style="background-color: #33cccc;" ng-click="submitImage(imageFile)" ng-disabled="imageButtonDisable">Upload Images</button>
+<!--                      
+                        <input type="submit" ng-click="submitImage(imageFile)"></input>-->
+                        <br>
+                        
+                    </div>
+                </div>
+            </div>
+        </section> 
+        <h2 style="color: #455A64;text-shadow: 2px 2px rgba(100, 100, 100, 0.1);text-transform: uppercase;"><b>Attached Images</b></h2>
+        <ul >
+          <li style="float: left;list-style: none;"  ng-repeat="item in pic">
+            <div class="content">
+             <img ng-src="{{item.img}}" class="img-thumbnail imgsize" ng-click="GetFullImage(item.img)">
+             <a href="" ng-click="delete_img($event,item)"><b><i class="fa fa-close" style="font-size: 18px;"></i></b></a>
+             </div>
+           <!--  <br>
+             <button style="background-color: #33cccc;"  type="submit" class="btn btn-primary"  ng-click="delete_img($event,item)">Delete</button> -->
+          </li>
+        </ul>
+         
+         
+    </div>
+     
+    <div ng-include="'partials/comments/commentslist.html'"></div>
+
+</div>
+                      
+<script>
+    app.controller("blogItemForGraphicCtrl",function($stateParams,$http,$scope,$rootScope,$timeout,$mdDialog,$mdDialog,commonService,$state){
+            if(typeof sessionStorage.username==""){
+                    $state.go("access.login");
+            }
+            else{
+                    $scope.buttonDisable=false;
+                    $rootScope.login_category=sessionStorage.category;
+                    $scope.contentStatus=$stateParams.contentStatus;
+                    $scope.graphicStatus=$stateParams.graphicStatus;
+                    // commonService.graphicBlogFullView($stateParams.blogId).then(function(success){
+                    //     $scope.content=success.data.description.content;
+                    //     $scope.title=success.data.description.title;
+                    //     $scope.coverimage=success.data.description.coverimage;
+                    // })
+                   commonService.getImages($stateParams.blogId).then(function(response){
+                        $rootScope.pic=response.data.description; 
+                    });
+                    //  commonService.getBlogComments($stateParams.blogId).then(function(success){
+                    //     $scope.comments=success.data.description;
+                    //     },function(error){
+                    //         console.log(error);
+                    // });
+                        graphicDesignerFullView();
+            }
+                function graphicDesignerFullView(){
+                     commonService.blogFullView($stateParams.blogId).then(function(success){
+                        $scope.content=success.data.description.content;
+                        $scope.title=success.data.description.title;
+                        $scope.coverimage=success.data.description.coverimage;
+                    })
+                }
+            // $scope.postComment=function(comment){
+            //      $scope.buttonDisable=true;
+            //      commonService.postComment($stateParams.blogId,comment).then(function(success){
+            //         $scope.comment="";
+            //         $scope.buttonDisable=false;
+            //         commonService.getBlogComments($stateParams.blogId).then(function(success){
+            //             $scope.comments=success.data.description;
+            //         },function(error){
+            //             console.log(error);
+            //         });
+            //     },function(error){
+            //         console.log(error);
+            //     })
+            // }
+
+            $scope.driverlink=function(text){
+                $scope.drive=text;
+            }
+            $scope.GetFullImage=function(item,ev){
+             // console.log(item);
+               $rootScope.fullview=item;
+             
+                    $mdDialog.show({
+                        controller: DialogController,
+                        templateUrl: 'fullimage.html',
+                        parent: angular.element(document.body),
+                        targetEvent: ev,
+                        clickOutsideToClose:true,
+                        fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+                    })
+                    .then(function() {
+
+                    });
+            }
+             $scope.delete_img = function(ev,item) {
+                    $rootScope.image=item.img;
+                    $rootScope.blogid=item.blogid;
+                    $mdDialog.show({
+                        controller: DialogController,
+                        templateUrl: 'deleteImageTemplate.html',
+                        parent: angular.element(document.body),
+                        targetEvent: ev,
+                        clickOutsideToClose:true,
+                        fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+                    })
+                    .then(function() {
+                        $rootScope.fullimage=item;
+                    });
+              }
+               function DialogController($scope, $mdDialog) {
+               
+                 $scope.fullviewimg=$rootScope.fullview;
+            //  console.log( $scope.fullviewimg);
+                $scope.hide = function() {
+                  $mdDialog.hide();
+                };
+
+                $scope.cancel = function() {
+                  $mdDialog.cancel();
+                };
+
+                $scope.no = function() {
+                  $mdDialog.hide();
+                };
+                $scope.delete = function() {
+                    commonService.deleteImage($rootScope.blogid,$rootScope.image)
+                    .then(function(response){
+                        $mdDialog.hide();
+                        commonService.getImages($stateParams.blogId).then(function(response){
+                                $rootScope.pic=response.data.description; 
+                        });
+                    });
+                 
+                };
+              }
+              $scope.deleteCoverImage = function(ev,item) {
+                   // $rootScope.image=item.img;
+                    $rootScope.blogid=$stateParams.blogId;
+                    //console.log($rootScope.blogid);
+                    $mdDialog.show({
+                        controller: CoverImageDialogController,
+                        templateUrl: 'deleteImageTemplate.html',
+                        parent: angular.element(document.body),
+                        targetEvent: ev,
+                        clickOutsideToClose:true,
+                        fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+                    })
+                    .then(function() {
+                    
+                    });
+              }
+               function CoverImageDialogController($scope, $mdDialog) {
+                $scope.hide = function() {
+                  $mdDialog.hide();
+                };
+
+                $scope.cancel = function() {
+                  $mdDialog.cancel();
+                };
+
+                $scope.no = function() {
+                  $mdDialog.hide();
+                };
+                $scope.delete = function() {
+                    console.log($rootScope.blogid);
+                    commonService.deleteCoverImage($stateParams.blogId)
+                    .then(function(response){
+                        $mdDialog.hide();
+                        graphicDesignerFullView();
+                    });
+                 
+                };
+              }
+        $scope.imageButtonDisable=false;
+        $scope.submitImage=function(imageFile){
+            if(imageFile!=null && imageFile.length!=0){
+                 $scope.imageButtonDisable=true;
+                     for(var i=0;i<imageFile.length;i++)
+                        {
+                            var fd = new FormData();
+                            fd.append('file',imageFile[i].lfFile);
+                            fd.append('blog_id',$stateParams.blogId);
+                            commonService.uploadImages(fd)
+                                .success(function(response){
+                                      $scope.imageButtonDisable=false;
+                                       //return response;
+                                }).error(function(error){
+                                    $mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent('images are not loaded please contact medicodesk.')
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    ).then(function() {
+                                       
+                                }, function() {
+                                });
+                                }); 
+                        }
+                $timeout(function(){
+                    $mdDialog.show(
+                                $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent('images are loaded successfully')
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    ).then(function() {
+                                         $scope.filesOnFileClick=[];
+                                         commonService.getImages($stateParams.blogId).then(function(response){
+                                                $rootScope.pic=response.data.description; 
+                                            });
+                                       
+                                }, function() {
+                                });
+                },4000);
+            }
+        }
+        $scope.disableCoverImageButton=false;
+        $scope.uploadCoverImage=function(uploadCover){
+            var fd = new FormData();
+            fd.append('file',uploadCover);
+            fd.append('blog_id',$stateParams.blogId);
+             if(uploadCover!=null && uploadCover.length!=0){
+                  $scope.disableCoverImageButton=true;
+                 commonService.uploadCoverImage(fd)
+                .success(function(response){
+                     $mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent("Cover Image Uploaded successfully.")
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    ).then(function() {
+                                        $scope.disableCoverImageButton=false;
+                                        graphicDesignerFullView();
+                                    //    commonService.blogFullView($stateParams.blogId).then(function(success){
+                                    //         $scope.coverimage=success.data.description.coverimage;
+                                            
+                                    //     })
+                                        $scope.filesOnUploadCover=[];
+                                }, function() {
+                                });
+                    
+                }).error(function(error){
+                    $mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent("Cover Image Not Uploaded Please Contact Medicodesk.")
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    ).then(function() {
+                                }, function() {
+                                });
+                }); 
+             }
+        }
+        
+        $scope.$watch('filesOnFileClick.length',function(newVal,oldVal){
+                $scope.imageFile=$scope.filesOnFileClick;
+            });
+         $scope.$watch('filesOnUploadCover.length',function(newVal,oldVal){
+            $scope.uploadCover=$scope.filesOnUploadCover[0].lfFile;
+        });
+        $scope.saveBlogAsIonize=function(){
+                  var confirm = $mdDialog.confirm()
+                          .title('Would you like to Ionize The blog?')
+                                    .ok('Yes')
+                                    .cancel('No'); 
+                          $mdDialog.show(confirm).then(function() {
+                        var today_date=new Date();
+                        var dataObject={
+                          'title':$scope.title,
+                          'content':$scope.content,
+                          'blog_id':$stateParams.blogId,
+                          'modified':today_date.getFullYear()+"-"+(today_date.getMonth()+1)+"-"+today_date.getDate(),
+                          'state':'ionize',
+                         
+                        }
+                  
+                   commonService.ionizetheBlog(dataObject).then(function(success){
+                      $mdDialog.show(
+                                  $mdDialog.alert()
+                                    .parent(angular.element(document.querySelector('#popupContainer')))
+                                    .clickOutsideToClose(true)
+                                    .textContent("Blog Ionized successfully")
+                                    .ok('Ok')
+                                    .targetEvent()
+                                ).then(function() {
+                                         $state.go("app.ui.reviewBlogs");
+                                }, function() {
+                                });
+                    },function(fail){
+                      console.log(fail);
+                      $mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent('Your Blog Is Not Ionize Please Check Your Internet Connection And Then Contact Medicodesk.')
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    )
+                    })
+                });
+                  //console.log(htmlContent);
+              }
+        
+    })
+
+    </script>
+<script type="text/ng-template" id="deleteImageTemplate.html">
+    <md-dialog aria-label="">
+  <form ng-cloak>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <span>Delete Image</span>
+        <span flex></span>
+        <!--<md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+        </md-button>-->
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+      <div class="md-dialog-content">
+        <h4>Are you want to delete the image?</h4>
+      </div>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <md-button ng-click="no()">
+      No
+      </md-button>
+      <md-button ng-click="delete()">
+        Yes
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
+<style>
+    md-toolbar.md-default-theme:not(.md-menu-toolbar), md-toolbar:not(.md-menu-toolbar){
+            background-color: #33cccc;
+            color: rgba(255,255,255,0.87);
+    }
+    </style>
+</script>
+
+<script type="text/ng-template" id="fullimage.html">
+   <md-dialog aria-label="" style="min-width: auto;">
+  <form ng-cloak>
+   
+<md-dialog-actions layout="row">
+     
+      <span flex></span>
+      <md-button ng-click="cancel()">
+       Close
+      </md-button>
+     
+    </md-dialog-actions>
+    <md-dialog-content>
+      <div class="md-dialog-content">
+      
+        <img style="margin: auto; max-width: 100%;" alt="" src="{{fullviewimg}}">
+      </div>
+    </md-dialog-content>
+
+    
+  </form>
+</md-dialog>
+</script>

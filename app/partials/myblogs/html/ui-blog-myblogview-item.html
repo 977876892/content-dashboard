@@ -1,0 +1,77 @@
+<script>
+    app.controller("myblogItemCtrl",function($state,$stateParams,$http,$scope,$rootScope,commonService,$base64){
+        if(typeof sessionStorage.username==""){
+                    $state.go("access.login");
+          }
+          else{
+             $scope.buttonDisable=false;
+             commonService.blogFullView($stateParams.blogId).then(function(success){
+                        console.log(success);
+                       // console.log($scope.htmlContent=success.data.description);
+                        $scope.htmlContent=success.data.description.content;
+                        $scope.title=success.data.description.title;
+                        //$scope.date=success.data.description.created_date;
+                        $scope.coverimage=success.data.description.coverimage;
+                        $scope.status=success.data.description.status;
+                        //console.log($scope.status);
+                        $scope.blogid=$stateParams.blogId;
+                       // console.log($scope.blogid);
+                }) 
+            }
+            //  commonService.getBlogComments($stateParams.blogId).then(function(success){
+            //     $scope.comments=success.data.description;
+            //     },function(error){
+            //         console.log(error);
+            // })
+            //         $scope.postComment=function(comment){
+            //             $scope.buttonDisable=true;
+            //              commonService.postComment($stateParams.blogId,comment).then(function(success){
+            //                 $scope.comment="";
+            //                 $scope.buttonDisable=false;
+            //                 commonService.getBlogComments($stateParams.blogId).then(function(success){
+            //                     $scope.comments=success.data.description;
+            //                 },function(error){
+            //                     console.log(error);
+            //                 });
+            //             },function(error){
+            //                 console.log(error);
+            //             })
+            // }
+    })
+    </script>
+<style type="text/css">
+    img{
+      max-width: 100%;
+     }
+</style>
+<div class='content-wrapper' ng-init="app.settings.pagetitle = 'SINGLE BLOG POST';" ng-controller="myblogItemCtrl">
+    <div class="col-lg-12">
+        <section class="box ">
+            
+            <div class="content-body padding-bottom-30">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <!-- start -->
+                        <div class="blog_post full_blog_post">
+                            <div>
+                            <h3 style="color:#33cccc;float: left;">{{title}}</h3>
+                             <a ui-sref="app.form.textAngular({blogId:blogid,graphicStatus:status})" class="btn btn-primary" style="background:#33cccc;margin-top: 3px;float: right;" ><span>Edit</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>
+                            </div>
+                            <!--&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                                 <span style="font-size:10px;color:black;"><b>Assign Date- </b>{{created_date}}</span>-->
+                            <img ng-src="{{coverimage}}" ng-show="coverimage!=''&& coverimage != defaultCoverImage"/>
+                            <div class="blog-content"><p ng-bind-html="htmlContent" style="word-wrap: break-word;"></p>
+                               
+                            </div>
+                           
+                        </div>
+                        <!-- end -->
+                    </div>
+                </div>
+            </div>
+        </section>         
+        <div ng-include="'partials/comments/commentslist.html'"></div>
+    </div>
+</div>
+
+

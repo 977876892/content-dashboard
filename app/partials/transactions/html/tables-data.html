@@ -1,0 +1,131 @@
+
+<script type="text/javascript">
+    app.controller('SettleCtrl', function($state,$scope, $filter, $rootScope,$http,commonService) {
+        //start date
+        $scope.startDate = "2010-01-06";
+        $scope.endDate = "2020-01-06";
+         if(typeof sessionStorage.username=="" || sessionStorage.username == undefined){
+                    $state.go("access.login");
+          }
+          else{
+              $rootScope.login_category=sessionStorage.category;
+                 //for blog start from first page
+                    $rootScope.selectedIndexForBlogs=0;
+                    $rootScope.currentPageForBlogs=1;	
+				//for blog start from first page
+              commonService.getSettlements()
+               .then(function success(response) {
+                $scope.settlements=response.data.description;
+                $scope.totalItems=response.data.description.length;
+                $scope.currentPage = 1;
+                $scope.entryLimit = 10; // items per page
+                $scope.noOfPages = Math.ceil($scope.totalItems / $scope.entryLimit);
+              });
+          }
+              $scope.clearFilter=function(){
+                    $scope.startDate = "2010-01-06";
+                    $scope.endDate = "2020-01-06";
+              };
+              $scope.exportData=function(){
+                    alasql('SELECT * INTO XLSX("settlements.xlsx",{headers:true}) FROM ?',[$scope.settlements]);
+                }   
+              
+    });
+    app.filter("myfilter", function($filter) {
+        return function(items, from, to) {
+            return $filter('filter')(items, "dates", function(v) {
+                var date = moment(v);
+                return date >= moment(from) && date <= moment(to);
+            });
+        };
+    });
+    app.filter('startBlogFrom', function () {
+	return function (input, start) {
+		if (input) {
+			start = +start;
+			return input.slice(start);
+		}
+		return [];
+	};
+});
+   
+</script>
+
+<link rel="stylesheet" type="text/css" href="css/datepicker.css"></link>
+ 
+                    <script>
+                        var input = document.querySelector('input[name="date1"]');
+                        var picker = datepicker(input);
+                        input.addEventListener('input', () => {
+                            console.log('strat date', input.value);
+                        });
+
+                        var input1 = document.querySelector('input[name="date2"]');
+                        var picker = datepicker(input1);
+                        input1.addEventListener('input', () => {
+                            console.log('end date', input1.value);
+                        });
+                    </script>
+<!--datepicker css-->
+<div class='content-wrapper' ng-init="app.settings.pagetitle = 'Credits';" ng-controller="SettleCtrl" >
+    <div class="col-lg-12">
+        <section class="box ">
+            <header class="panel_header">
+                <h2 class="title pull-left">Credit Data Table</h2>
+            </header>
+            <div class="content-body padding-bottom-15">
+			 <table class="field">
+                        <tr>
+                            <td><b>Start Date -</b></td>
+                            <td><input type="text" name="date1" ng-model="startDate" /></td>
+                            <td><b>End Date -</b></td>
+                            <td><input type="text" name="date2" ng-model="endDate" /></td>
+                            <td><input type="button" value="Clear Filters" style="margin-left: 16px;border-radius: 6px;height: 41px;" ng-click="clearFilter()"/></td>
+                            <td><input type="text" ng-model="searchFilter" style="margin-left: 106px;" placeholder="Search.."/></td>
+                        </tr>
+                    </table>
+                <div class="row">
+
+                    <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
+
+                            <div class="col-md-5 col-sm-6 col-xs-12" style="width: 100%;">
+                                <nav class='pull-right search-paging'>
+                                    <uib-pagination ng-model="currentPage" max-size="noOfPages" total-items="totalItems" items-per-page="entryLimit" class="pull-right"></uib-pagination>
+                                </nav>
+                            </div>
+                        <table class="table table-striped" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width:20%">Transaction Id</th>
+                                    <th style="width:25%">Date</th>
+                                    <th style="width:15%">Amount</th>
+                                    <th style="width:25%">User Id</th>
+                                    <th style="width:15%">Status</th>
+                                    <th style="width:15%">Total Credits</th>
+                                    <th style="width:15%">From</th>
+                                    <th style="width:15%">To</th>
+                                </tr>
+                            </thead>
+                            <tr ng-repeat="item in filtered=settlements | filter:searchFilter | myfilter: startDate: endDate | startBlogFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
+                                <td><a ui-sref="app.tables.settlements" style="color: #757581;">{{item.Transaction_id}}</a></td>
+                                <td>{{item.Date}}</td>
+                                <td>{{item.Amount}}</td>
+                                <td>{{item.Userid}}</td>
+                                <td>{{item.Status}}</td>
+                                <td>{{item.Total_credits}}</td>
+                                <td>{{item.From}}</td>
+                                <td>{{item.To}}</td>
+                            </tr>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <button type="button" ng-click="exportData()" class="btn btn-info" ng-show="settlements.length > 0">Download</button>
+            </div>
+            <h3 class="title pull-left" ng-show="(settlements | filter:searchFilter).length==0">
+                          No Records Are Found
+            </h3>
+        </section>
+    </div>
+</div>

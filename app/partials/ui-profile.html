@@ -1,0 +1,556 @@
+
+
+<style type="text/css">
+    
+.form-style-2{
+    max-width: 500px;
+    padding: 20px 12px 10px 20px;
+    font: 13px Arial, Helvetica, sans-serif;
+}
+.form-style-2-heading{
+    font-weight: bold;
+    font-style: italic;
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 20px;
+    font-size: 15px;
+    padding-bottom: 3px;
+}
+.form-style-2 label{
+    display: block;
+    margin: 0px 0px 15px 0px;
+}
+.form-style-2 label > span{
+    width: 100px;
+    font-weight: bold;
+   /* float: left;*/
+    padding-top: 8px;
+    padding-right: 5px;
+}
+.form-style-2 span.required{
+    color:red;
+}
+.form-style-2 .tel-number-field{
+    width: 40px;
+    text-align: center;
+}
+.form-style-2 input.input-field{
+    width: 50%;
+    
+}
+
+
+.form-style-2 input.input-field, 
+.form-style-2 .tel-number-field, 
+.form-style-2 .textarea-field, 
+ .form-style-2 .select-field{
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    /*border: 1px solid #C2C2C2;
+    box-shadow: 1px 1px 4px #EBEBEB;
+    -moz-box-shadow: 1px 1px 4px #EBEBEB;
+    -webkit-box-shadow: 1px 1px 4px #EBEBEB;*/
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    padding: 7px;
+    outline: none;
+}
+.form-style-2 .input-field:focus, 
+.form-style-2 .tel-number-field:focus, 
+.form-style-2 .textarea-field:focus,  
+.form-style-2 .select-field:focus{
+/*    border: 1px solid #0C0;
+*/}
+.form-style-2 .textarea-field{
+    height:100px;
+    width: 50%;
+}
+.form-style-2 input[type=submit],
+.form-style-2 input[type=button]{
+    border: none;
+    padding: 8px 15px 8px 15px;
+    background: #FF8500;
+    color: #fff;
+    box-shadow: 1px 1px 4px #DADADA;
+    -moz-box-shadow: 1px 1px 4px #DADADA;
+    -webkit-box-shadow: 1px 1px 4px #DADADA;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+}
+.form-style-2 input[type=submit]:hover,
+.form-style-2 input[type=button]:hover{
+    background: #EA7B00;
+    color: #fff; 
+}
+
+
+/*star rating css*/
+
+     span.stars, span.stars span {
+    display: block;
+  
+    background: url('https://apppresser.com/wp-content/uploads/2015/11/stars.png') 0 -16px repeat-x;
+    width: 80px;
+    height: 16px;
+
+}
+
+span.stars span {
+    background-position: 0 0;
+}
+
+.alignright {
+  margin:0px auto;
+}
+</style>
+<!-- form table -->
+<script>
+    $('#edit').click(function(){
+  $('#form').toggleClass('view');
+  $('input,textarea').each(function(){
+    var inp = $(this);
+    if (inp.attr('readonly')) {
+     inp.removeAttr('readonly');
+     $('#country,#state,#file-2').prop('disabled', true);
+     $(".form-style-2 input.input-field,.form-style-2 .textarea-field,.form-style-2 .select-field").css("border", "none");
+     $(".form-style-2 input.input-field:focus").css("border", "none");
+
+    }
+    else {
+      inp.attr('readonly', 'readonly');
+     $('#country,#state,#file-2').prop('disabled', false);
+      $(".form-style-2 input.input-field,.form-style-2 .textarea-field,.form-style-2 .select-field").css("border", "1px solid #C2C2C2");
+     $(".form-style-2 input.input-field:focus").css("border", "1px solid #BEBEBE");
+       
+    }
+  });
+});
+</script>
+
+<script>
+   
+
+            
+    app.controller("formctrl",function($scope,$http,$rootScope,$mdDialog){
+        	if(typeof sessionStorage.username==""){
+				$state.go("access.login");
+	        }
+	        else{
+        $rootScope.login_category=sessionStorage.category;
+        
+        $scope.submitForm=function(){
+            console.log($scope.image_path);
+             var date=new Date();
+                        var dataObject={
+                                'user_id':sessionStorage.USER_ID,
+                                'firstname':$scope.first,
+                                'lastname':$scope.last,
+                                'email':$scope.email,
+                                'phone':$scope.mobile,
+                               'exp':$scope.experience,
+                                'acc_name':$scope.acc_name,
+                                'acc_no':$scope.accno,
+                                'ifsc_code':$scope.ifsc_code,
+                                'role':$scope.role,
+                                'skills':$scope.skills,
+                                'overview':$scope.overview,
+                                'file':$scope.image_path
+                        }
+                    $http({
+                      url:sessionStorage.IonServer+"/index.php/request?action=profileupdate&module=ionize&resource=posts",
+                      method:'POST',
+                      headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                      },
+                      transformRequest: function(obj) {
+                        var str = [];
+                        for (var p in obj)
+                          str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                        return str.join("&");
+                      },
+                        data:dataObject
+                    }).then(function(success){
+                      location.reload(true);
+                        console.log(success);
+                    },function(fail){
+                      console.log(fail);
+                    })
+        }
+
+        //get the profile form data
+             $http({url: sessionStorage.IonServer+"/?option=com_api&app=users&resource=login&format=raw",
+                    method: "POST",
+                    headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    transformRequest: function(obj) {
+                    var str = [];
+                    for (var p in obj)
+                    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                    return str.join("&");
+                    },
+                    data: {
+                    username: sessionStorage.username,
+                    password: sessionStorage.password
+                    }
+                    }).then(function(success) {
+                        console.log(success);
+                        $scope.first=success.data.firstname;
+                        $scope.last=success.data.lastname;
+                        $scope.email=success.data.email;
+                        $scope.mobile=success.data.phone;
+                        $scope.experience=success.data.exp;
+                        $scope.acc_name=success.data.account_name;
+                        $scope.accno=success.data.account_number;
+                        $scope.ifsc_code=success.data.ifsc_code;
+                        $scope.role=success.data.role;
+                        $scope.skills=success.data.skills;
+                        $scope.overview=success.data.aboutme;
+                        $scope.profile_image=success.data.profile_image;
+                        $scope.Rating=success.data.rating;
+                        console.log($scope.Rating);
+                    },
+                    function(failure) {
+                        console.log(failure);
+                    });    
+            }
+           
+            $scope.showProfileImageDialog = function() {
+                   // var deferred = $q.defer();  
+                        app.directive('fileModel', ['$parse', function ($parse) {
+                        return {
+                            restrict: 'A',
+                            link: function(scope, element, attrs) {
+                                var model = $parse(attrs.fileModel);
+                                var modelSetter = model.assign;
+                                
+                                element.bind('change', function(){
+                                    scope.$apply(function(){
+                                        modelSetter(scope, element[0].files[0]);
+                                    });
+                                });
+                            }
+                        };
+                    }]); 
+
+                //var ev=$event;
+                $mdDialog.show({
+                controller: DialogController,
+                templateUrl: 'profileImageDialog.html',
+                clickOutsideToClose:true,
+                //fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+                })
+                .then(function(answer) {
+                    $scope.status = 'You said the information was "' + answer + '".';
+                    }, function() {
+                    $scope.status = 'You cancelled the dialog.';
+
+                    });
+                   
+                };
+                
+                function DialogController($scope, $mdDialog) {
+                    $scope.hide = function() {
+                    $mdDialog.hide();
+                    };
+
+                    $scope.cancel = function() {
+                    $mdDialog.cancel();
+                    };
+
+                    $scope.saveImage = function(image) {
+                    //console.log(answer);
+                    console.log(image);
+                            var fd = new FormData();
+                            fd.append('file',image);
+                            fd.append('user_id', sessionStorage.USER_ID);
+                           // console.log(fd);
+                            $http.post(sessionStorage.IonServer+"/index.php/request?action=image&module=ionize&resource=posts&type=profile", fd, {
+                                transformRequest: angular.identity,
+                                headers: {'Content-Type': undefined}
+                            })
+                            .success(function(response){
+                                $mdDialog.hide();
+                                $mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent('profile image uploaded successfully.')
+                                        .ok('Ok')
+                                        .targetEvent()
+
+                                    ).then(function(){
+
+                            $http({url: sessionStorage.IonServer+"/?option=com_api&app=users&resource=login&format=raw",
+                                method: "POST",
+                                headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                transformRequest: function(obj) {
+                                var str = [];
+                                for (var p in obj)
+                                str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                                return str.join("&");
+                                },
+                                data: {
+                                username: sessionStorage.username,
+                                password: sessionStorage.password
+                                }
+                                }).then(function(success) {
+                                    console.log(success);
+                                    $scope.profile_image=success.data.profile_image;
+                                     sessionStorage.profile_img=success.data.profile_image;
+                                    console.log(sessionStorage.profile_img);
+                                    location.reload(true);
+                                }); 
+                                 //location.reload(true);
+                                    });
+                               
+                                console.log(response);
+                              
+                            // return response;
+                            })
+                            .error(function(){
+                                
+                                $mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent('profile image not uploaded please contact medicodesk.')
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    )
+                            }); 
+                        
+                    //return true;
+                    $mdDialog.hide();
+                    
+                    };
+                }
+         /*rating*/
+            $scope.getStars = function(Rating) {
+                // Get the value
+                var val = parseFloat(Rating);
+                // Turn value into number/100
+                var size = val/5*100;
+                return size + '%';
+             
+              }
+
+
+  
+    });
+
+</script>
+
+<div class='content-wrapper' ng-init="app.settings.pagetitle = 'Profile';" ng-controller="formctrl">
+    <div class="col-lg-12">
+        <section class="box nobox">
+            <div class="content-body">
+                <div class="row">
+                    <div class="col-md-3 col-sm-4 col-xs-12 padding-right-0">
+                        <div class=" uprofile-wrapper" style="background-color: #37474f;">
+                            <div class="uprofile-image">
+                                <img src="{{profile_image}}" class="img-responsive" ng-click="showProfileImageDialog()">
+                            </div>
+                            <div class="uprofile-name">
+                                
+                               <p style="color: white;">{{first}}&nbsp{{last}}</p>
+                                <p style="color: white;">{{role}}</p>
+                                <p  style="color: white;">{{overview}}</p>
+                             <!-- rating -->
+                               <span class="stars alignright" ng-hide="login_category==20 || Rating == null || Rating == 0">
+                                     <span ng-style="{ 'width': getStars(Rating) }"></span>
+                                </span>
+
+
+                            <!-- rating -->
+
+                                 <!--  <span class="rating" ng-hide="login_category==20">
+                                          <span ng-class="Rating>=1?'ratingcolor':''">☆</span>
+                                          <span ng-class="Rating>=2?'ratingcolor':''">☆</span>
+                                          <span ng-class="Rating>=3?'ratingcolor':''">☆</span>
+                                          <span ng-class="Rating>=4?'ratingcolor':''">☆</span>
+                                          <span ng-class="Rating>=5?'ratingcolor':''">☆</span>
+                                    </span> -->
+                                
+                                      
+                                <br>
+                               
+                            </div>
+                        </div>
+
+                        
+                        <div class="uprofile-buttons margin-0 padding-top-0 text-center">
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-9 col-sm-8 col-xs-12 padding-left-0">
+                        <div class="uprofile-content padding-top-30">
+                            <div class="clearfix"></div>
+               
+                        <div>
+                         <div class="form-style-2">
+                            
+                            <form class="view" id="form">
+
+                            <label for="field1"><span>First Name &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <span class="required">*</span>
+                            <input type="text" class="input-field" name="field1" value="" ng-model="first" readonly/>
+                            </label>
+
+                            <label for="field1"><span>Last Name &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <span class="required">*</span>
+                            <input type="text" class="input-field" name="field1" value="" ng-model="last" readonly/>
+                            </label>
+
+                            <label for="field1"><span>Email &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <span class="required">*</span>
+                            <input type="text" class="input-field" name="field1" value="" ng-model="email" readonly/>
+                            </label>
+                            
+                            <label for="field1"><span>Mobile No. &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <span class="required">* </span> 
+                            <input type="text" class="input-field" name="field1" value="" ng-model="mobile" readonly/>
+                            </label>
+
+                            <label for="field1"><span>Work Experience &nbsp <span class="required">*</span>
+                            <input type="text" class="input-field" name="field1" value="" ng-model="experience" readonly/>
+                            </label>
+
+                             <label for="field5"><span>Account Name &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span class="required">*</span>
+                            <input type="text" class="input-field" name="field1" value="" ng-model="acc_name" readonly/>
+                            </label>
+
+                            <label for="field5"><span>Account No. &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span class="required">*</span>
+                            <input type="text" class="input-field" name="field1" value="" ng-model="accno" readonly/>
+                            </label>
+
+                            <label for="field5"><span>IFSC CODE &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span class="required">*</span>
+                            <input type="text" class="input-field" name="field1" value="" ng-model="ifsc_code" readonly/>
+                            </label>
+
+                            <label for="field1"><span>Role &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <span class="required">*</span>
+                            <input type="text" class="input-field" name="field1" ng-model="role" readonly/>
+                            </label>
+
+                            <label for="field1"><span>Skills  &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <span class="required">*</span>
+                                <input type="text" class="input-field" name="field1" ng-model="skills" readonly/>
+                            </label>
+
+                             <label for="field5"><span>Overview &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <span class="required">*</span>
+                                <textarea name="field1" ng-model="overview" class="textarea-field" readonly></textarea>
+                            </label>
+                           
+                            <label><span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp;</span>
+                            <button type="button" class="btn btn-warning" ng-click="submitForm()">Submit</button>
+                            <button type="button" id="edit" class="btn btn-info">Edit</button>
+                            </label>
+                            
+                            </form>
+                            </div>
+                        </div>
+
+                   <hr>
+                  
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+<!-- input type file -->
+<script>(function(e,t,n){var r=e.querySelectorAll("html")[0];r.className=r.className.replace(/(^|\s)no-js(\s|$)/,"$1js$2")})(document,window,0);</script>
+<script src="js/custom-file-input.js"></script>
+<style>
+    /*input type file*/
+.js .inputfile {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.inputfile + label {
+    width: 100%;
+    font-size: 1.15rem;
+    /* 20px */
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    display: inline-block;
+    /*overflow: hidden;*/
+    padding: 0.300rem 1.25rem;
+    /* 10px 20px */
+}
+
+
+
+.inputfile + label svg {
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+    fill: currentColor;
+    margin-top: -0.25em;
+    /* 4px */
+    margin-right: 0.25em;
+    /* 4px */
+}
+.inputfile-2 + label {
+    width: auto;
+    color: #33cccc;
+    border: 2px solid #33cccc;
+}
+
+.inputfile-2:focus + label,
+.inputfile-2.has-focus + label,
+.inputfile-2 + label:hover {
+    color: #33cccc;
+}
+
+</style>
+
+
+  <script type="text/ng-template" id="profileImageDialog.html"><md-dialog aria-label="Images">
+  <form>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Images</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+    <md-dialog-content style="width: 700px;">
+      <md-tabs md-dynamic-height md-border-bottom>
+        <md-tab label="Upload">
+          <md-content class="md-padding">
+             <input type="file" accept="image/*;capture=camera" file-model="myFile" id="imagefile"/></input>
+                            <input type="hidden" name="imageName" id="imageName"/>
+                            <div id="content"></div>
+                       
+          </md-content>
+        </md-tab>
+      </md-tabs>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+     
+      <span flex></span>
+      <md-button ng-click="saveImage('not useful')" >
+        Cancel
+      </md-button>
+      <md-button ng-click="saveImage(myFile)" style="margin-right:20px;" >
+        Save
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
+</script>

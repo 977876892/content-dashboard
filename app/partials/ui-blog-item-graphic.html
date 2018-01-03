@@ -1,0 +1,161 @@
+    <style type="text/css">
+        .imgsize{
+        width: 300px;
+        height: 300px;
+        margin-right: 15px;
+        margin-top: 10px;
+      }
+    </style>
+<div class='content-wrapper' ng-init="app.settings.pagetitle = 'Single Blog Post';" ng-controller="blogItemForGraphicCtrl" >
+    <div class="col-lg-12" >
+        <section class="box ">
+            <header class="panel_header">
+                <h2 class="title pull-left">Single Blog Post</h2>
+            </header>
+            <div class="content-body padding-bottom-30">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <!-- start -->
+                        <div class="blog_post full_blog_post">
+                            <h3><p href="#">{{title}}</p></h3>
+                            <div class="blog-content"><p ng-bind-html="content"></p></div>
+                        </div>
+                        <!-- end -->
+
+                        <div layout-padding flex>
+                                    <md-content>
+                                        <lf-ng-md-file-input lf-files="filesOnUploadCover" lf-on-file-click="onFileClick" lf-on-file-remove="onFileRemove" lf-api="api999" preview drag multiple></lf-ng-md-file-input>
+                                    </md-content>
+
+                        </div>
+
+                        <input type="button" value="Upload Cover Image " ng-click="uploadCoverImage(uploadCover)"></input>
+                        <hr style="border-top: 1px solid rgba(0,0,0,0.87);">
+                        <!--image drag and drop-->
+                        <div layout-padding flex>
+                                    <md-content>
+                                        <lf-ng-md-file-input lf-files="filesOnFileClick" lf-on-file-click="onFileClick" lf-on-file-remove="onFileRemove" lf-api="api999" preview drag multiple></lf-ng-md-file-input>
+                                    </md-content>
+
+                        </div>
+                         <!--image drag and drop-->
+                        <!--<input type="file" accept="image/*;capture=camera" file-model="myFile" id="imagefile"/></input>
+                            <input type="hidden" name="imageName" id="imageName"/>
+                            <div id="content"></div>-->
+                        <input type="submit" ng-click="submitImage(imageFile)"></input>
+                        <br>
+                        <p> </p>
+                        
+                    </div>
+                </div>
+            </div>
+        </section>
+         <img ng-repeat="item in pic" ng-src="{{item.img}}" class="img-thumbnail imgsize" >
+    </div>
+</div>
+<script>
+    app.controller("blogItemForGraphicCtrl",function($stateParams,$http,$scope,$rootScope,$cookies,$timeout,$mdDialog){
+        	if(typeof $cookies.get("username")=="undefined"){
+				    $state.go("access.login");
+	        }
+            else{
+                    $rootScope.login_category=$cookies.get("category");
+                    console.log($cookies.get("ION_SERVER")+"/index.php/request?action=detailview&module=ionize&resource=posts&review_id="+$stateParams.blogId);
+                    $http.get($cookies.get("ION_SERVER")+"/index.php/request?action=detailview&module=ionize&resource=posts&review_id="+$stateParams.blogId).then(function(success){
+                        $scope.content=success.data.description.content;
+                        $scope.title=success.data.description.title;
+                    })
+                    $http.get($cookies.get("ION_SERVER")+"/index.php/request?action=retrive&module=ionize&resource=posts&blog_id="+$stateParams.blogId).then(function(response){
+                        $scope.pic=response.data.description;   
+                    });
+            }
+        $scope.submitImage=function(imageFile){
+            console.log(imageFile);
+            if(imageFile!=null && imageFile.length!=0){
+                     for(var i=0;i<imageFile.length;i++)
+                        {
+                            var fd = new FormData();
+                            fd.append('file',imageFile[i].lfFile);
+                            fd.append('blog_id',$stateParams.blogId);
+                            $http.post($cookies.get("ION_SERVER")+"/index.php/request?action=image&module=ionize&resource=posts", fd, {
+                                    transformRequest: angular.identity,
+                                    headers: {'Content-Type': undefined}
+                                }).success(function(response){
+                                       //return response;
+                                }).error(function(error){
+                                    $mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent('images are not loaded please contact medicodesk.')
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    ).then(function() {
+                                }, function() {
+                                });
+                                }); 
+                        }
+                $timeout(function(){
+                    $mdDialog.show(
+                                $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent('images are loaded successfully')
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    ).then(function() {
+                                        location.reload(true);
+                                }, function() {
+                                });
+                },6000);
+            }
+            
+           // location.reload(true);
+        }
+        $scope.uploadCoverImage=function(uploadCover){
+            var fd = new FormData();
+            fd.append('file',uploadCover);
+            fd.append('blog_id',$stateParams.blogId);
+             if(uploadCover!=null && uploadCover.length!=0){
+            $http.post($cookies.get("ION_SERVER")+"/index.php/request?action=image&module=ionize&resource=posts&type=cover", fd, {
+                    transformRequest: angular.identity,
+                    headers: {'Content-Type': undefined}
+                }).success(function(response){
+                     $mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent("Cover Image Uploaded successfully.")
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    ).then(function() {
+                                         location.reload(true);
+                                }, function() {
+                                });
+                    
+                }).error(function(error){
+                    $mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent("Cover Image Not Uploaded Please Contact Medicodesk.")
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    ).then(function() {
+                                }, function() {
+                                });
+                }); 
+             }
+        }
+        
+        $scope.$watch('filesOnFileClick.length',function(newVal,oldVal){
+                $scope.imageFile=$scope.filesOnFileClick;
+            });
+         $scope.$watch('filesOnUploadCover.length',function(newVal,oldVal){
+            $scope.uploadCover=$scope.filesOnUploadCover[0].lfFile;
+        });
+
+        
+    })
+
+    </script>

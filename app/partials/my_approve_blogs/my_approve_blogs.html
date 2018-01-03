@@ -1,0 +1,145 @@
+<style type="text/css">
+    .dialogdemoBasicUsage #popupContainer {
+  position: relative; }
+
+.dialogdemoBasicUsage .footer {
+  width: 100%;
+  text-align: center;
+  margin-left: 20px; }
+
+.dialogdemoBasicUsage .footer, .dialogdemoBasicUsage .footer > code {
+  font-size: 0.8em;
+  margin-top: 50px; }
+
+.dialogdemoBasicUsage button {
+  width: 200px; }
+
+.dialogdemoBasicUsage div#status {
+  color: #c60008; }
+
+.dialogdemoBasicUsage .dialog-demo-prerendered md-checkbox {
+  margin-bottom: 0; }
+  .blog_space{
+      height:200px;
+  }
+</style>
+<div class='content-wrapper' ng-init="app.settings.pagetitle = 'My Approve Blogs';" ng-controller="MyApprovedBlogsCtrl">
+    <div class="col-lg-12" >
+        <section class="box ">
+            <header class="panel_header">
+                <h2 class="title pull-left">My Approve Blogs</h2>
+                <!-- <div class="actions panel_actions pull-right">
+                    <i class="box_toggle material-icons">expand_more</i>
+                    <i class="box_setting material-icons" ng-click="section_modal()">mode_edit</i>
+                    <i class="box_close material-icons">close</i>
+                </div> -->
+            </header>
+            <div class="content-body padding-bottom-0">
+                <div class="row">
+                    <div class="col-md-7 col-sm-6 col-xs-12">
+                        <div class="input-group primary" inputgroup>
+                            <span class="input-group-addon">                
+                    <span class="arrow"></span>
+                            <i class="fa fa-search"></i>
+                            </span>
+                            <input type="text" class="form-control search-page-input" placeholder="Search" ng-model="searchFilter">
+                        </div>
+                    </div>
+                    <div class="col-md-5 col-sm-6 col-xs-12">
+                        <nav class='pull-right search-paging'>
+                            <uib-pagination ng-model="currentPage" max-size="noOfPages" total-items="totalItems" items-per-page="entryLimit" class="pull-right"></uib-pagination>
+                        </nav>
+                    </div>
+                    <div class="clearfix"></div>
+                    <br>
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                         <h3 class="title pull-left" ng-show="items.length==0||(items | filter:searchFilter).length==0">NO BLOGS ARE AVAILABLE</h3>
+                         <!-- <h3 class="title pull-left" ng-hide="items.length==0" ng-if="(items | filter:searchFilter).length==0">
+                          NO BLOGS ARE AVAILABLE
+                          </h3> -->
+                        <!-- start -->
+                        <!--<div class="blog_post" ng-repeat="item in filtered = items | filter:search | startBlogFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
+                            <h3><a ui-sref="app.ui.blogview({blogId:item.id})">{{item.title}}</a></h3>
+                            <h5>Written by <a href="#">{{item.author}}</a> on {{item.date}}</h5>
+                            <p class="blog_info">
+                                <i class="fa fa-comment"></i> <a href="#comments">{{item.comments}} comments</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                                <i class="fa fa-tags"></i>
+                                <a ng-repeat="category in item.category">{{categor-+++++++y.name}}</a>
+                            </p>
+                            <img class="media-object" ng-src="{{item.thumb}}" alt="">
+                            <p class="blog-content">{{item.description}}</p>
+                            <a ui-sref="app.ui.blogview({blogId:item.id})" class="btn btn-primary"><span>Read more</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>
+                        </div>-->
+                        <!-- end -->
+                        <!-- start --> 
+                        <!--<div class="blog_post" ng-repeat="item in filtered = items | filter:title | startBlogFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">-->
+                            <div class="blog_post blog_space" ng-repeat="item in items | filter:searchFilter | startBlogFrom:(currentPage-1)*entryLimit | limitTo:entryLimit" >
+                                <div style="height: 160px;overflow: hidden;">
+                                <h3>
+                                <a ui-sref="app.ui.my_approve_blogs_fullview({blogId:item.blogid})" style="color:#33cccc">{{item.title}}</a>
+                                <!-- &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                                  <span style="font-size:10px;"><b>Created Date- </b>{{item.created}}</span>
+                                 &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <span style="font-size:20px;">{{item.clinic_name}}</span>
+                                </h3> -->
+                                
+                                <img class="media-object" ng-src="{{item.coverimage}}" ng-show="item.coverimage != defaultCoverImage">
+                                <p class="blog-content" ng-bind-html="item.content" style="word-wrap: break-word;"></p>
+                                </div>
+                                <a ui-sref="app.ui.my_approve_blogs_fullview({blogId:item.blogid})" class="btn btn-primary" style="background:#33cccc;margin-top: 3px;"><span>Read more</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>                                 
+                                
+                                
+                                <hr style="border-top: 1px solid #33cccc;">
+                        </div>
+                        <!-- end -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+  // app.controller('BlogPageCtrl', ['$scope', 'filterFilter', function ($scope, filterFilter) {
+  app.controller('MyApprovedBlogsCtrl', ['$state','$scope','$http','$rootScope','$window','$mdDialog','commonService', function ($state,$scope, $http,$rootScope,$window,$mdDialog,commonService) {
+
+  if(sessionStorage.username=="" || sessionStorage.username == undefined){
+        $state.go("access.login");
+  }
+  else{
+     $rootScope.login_category=sessionStorage.category;
+        //for blog start from first page
+            $rootScope.selectedIndexForBlogs=0;
+            $rootScope.currentPageForBlogs=1;	
+        //for blog start from first page
+        //for assign blog start from first page
+            $rootScope.assignedBlogIndex=0;
+            $rootScope.currentPageForAssignedBlogs=1;
+        //for assign blog start from first page
+      commonService.MyApproveBlogs().then(function(response){
+                $scope.items=response.data.description;
+                $scope.totalItems=response.data.description.length;
+                noOfBlogsPerPage($scope.totalItems);
+            });
+  
+}
+ function noOfBlogsPerPage(totalItems){
+      // pagination controls
+      $scope.currentPage = 1;
+      $scope.totalItems =totalItems;
+      //console.log($scope.totalItems);
+      $scope.entryLimit = 10; // items per page
+      $scope.noOfPages = Math.ceil($scope.totalItems / $scope.entryLimit);
+      //console.log($scope.noOfPages);
+   }
+    
+  
+  // $watch search to update pagination
+  $scope.$watch('search', function (newVal, oldVal) {
+    //$scope.filtered = filterFilter($scope.items, newVal);
+  //  $scope.totalItems = $scope.filtered.length;
+    $scope.noOfPages = Math.ceil($scope.totalItems / $scope.entryLimit);
+    $scope.currentPage = 1;
+  }, true);
+  
+}]);
+</script>

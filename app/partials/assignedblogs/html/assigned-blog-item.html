@@ -1,0 +1,230 @@
+<script>
+    app.controller("assignItemCtrl",function($state,$stateParams,$http,$scope,$rootScope,commonService,$mdDialog){
+        if(typeof sessionStorage.username==""){
+                    $state.go("access.login");
+          }
+          else{
+              $scope.buttonDisable=false;
+              commonService.blogFullView($stateParams.blogId).then(function(success){
+                        console.log(success);
+                        $scope.htmlContent=success.data.description.content;
+                        $scope.title=success.data.description.title;
+                        $scope.date=success.data.description.created_date;
+                        $scope.coverimage=success.data.description.coverimage;
+                }) 
+                //  commonService.getBlogComments($stateParams.blogId).then(function(success){
+                //      console.log(comments);
+                //         $scope.comments=success.data.description;
+                //     },function(error){
+                //         console.log(error);
+                //     })
+                    commonService.getImages($stateParams.blogId).then(function(response){
+                        $rootScope.pic=response.data.description; 
+                    });
+            }
+
+            $scope.GetFullImage=function(item,ev){
+             // console.log(item);
+               $rootScope.fullview=item;
+             
+                    $mdDialog.show({
+                        controller: DialogController,
+                        templateUrl: 'fullimage.html',
+                        parent: angular.element(document.body),
+                        targetEvent: ev,
+                        clickOutsideToClose:true,
+                        fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+                    })
+                    .then(function() {
+
+                    }); 
+            }
+
+
+                $scope.delete_img = function(ev,item) {
+                    $rootScope.image=item.img;
+                    $rootScope.blogid=item.blogid;
+                    $mdDialog.show({
+                        controller: DialogController,
+                        templateUrl: 'deleteImageTemplate.html',
+                        parent: angular.element(document.body),
+                        targetEvent: ev,
+                        clickOutsideToClose:true,
+                        fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+                    })
+                    .then(function() {
+                    
+                    });
+              }
+               function DialogController($scope, $mdDialog) {
+                 $scope.fullviewimg=$rootScope.fullview;
+                $scope.hide = function() {
+                  $mdDialog.hide();
+                };
+
+                $scope.cancel = function() {
+                  $mdDialog.cancel();
+                };
+
+                $scope.no = function() {
+                  $mdDialog.hide();
+                };
+                $scope.delete = function() {
+                    commonService.deleteImage($rootScope.blogid,$rootScope.image)
+                    .then(function(response){
+                        $mdDialog.hide();
+                        commonService.getImages($stateParams.blogId).then(function(response){
+                                $rootScope.pic=response.data.description; 
+                        });
+                    });
+                 
+                };
+              }
+           
+        // $scope.postComment=function(comment){
+                    
+        //          $scope.buttonDisable=true;
+        //          commonService.postComment($stateParams.blogId,comment).then(function(success){
+        //          $scope.comment="";
+        //             commonService.getBlogComments($stateParams.blogId).then(function(success){
+        //                     $scope.buttonDisable=false;
+        //                     $scope.comments=success.data.description;
+        //             },function(error){
+        //                 console.log(error);
+        //             });
+        //         },function(error){
+        //             console.log(error);
+        //         })
+        //     }
+    })
+    </script>
+<style>
+    img{
+      max-width: 100%;
+     }
+      .imgsize{
+        width: 300px;
+        height: 300px;
+        margin-right: 15px;
+        margin-top: 10px;
+      }
+      .content{    
+   
+    line-height: 20px;
+    margin-top: 20px;
+    margin-left: 9px;
+    margin-right:0px;
+    display:inline-block;
+    position:relative;
+}
+
+.content a {
+    position:absolute;
+    bottom:5px;
+    right:28px;
+    top: 20px;
+    /*background:blue;*/
+    color:#FFF;
+}
+</style>
+<div class='content-wrapper' ng-init="app.settings.pagetitle = 'SINGLE BLOG POST
+';" ng-controller="assignItemCtrl">
+    <div class="col-lg-12">
+        <section class="box ">
+            
+            <div class="content-body padding-bottom-30">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <!-- start -->
+                        <div class="blog_post full_blog_post">
+                            <h3 style="color:#33cccc">{{title}}</h3>
+                            <img ng-src="{{coverimage}}" ng-show="coverimage!=''&& coverimage!=defaultCoverImage"/>
+                            <div class="blog-content"><p ng-bind-html="htmlContent" style="word-wrap: break-word;"></p>
+                               
+                            </div>
+                           
+                        </div>
+                        <!-- end -->
+                    </div>
+                </div>
+            </div>
+        </section>
+        <ul>
+          <li ng-repeat="item in pic" style="float: left;list-style: none;">
+             <div class="content">
+            <img  ng-src="{{item.img}}" class="img-thumbnail imgsize" ng-click="GetFullImage(item.img)">
+              <a href="" ng-click="delete_img($event,item)"><b><i class="fa fa-close" style="font-size: 18px;"></i></b></a>
+          </div>
+            <!-- <br>
+             <button style="margin-top:8px;background-color: #33cccc;"  type="submit" class="btn btn-primary"  ng-click="delete_img($event,item)">Delete</button> -->
+          </li>
+        </ul>
+         
+    </div>
+         <div ng-include="'partials/comments/commentslist.html'"></div>
+          
+</div>
+<script type="text/ng-template" id="deleteImageTemplate.html">
+    <md-dialog aria-label="">
+  <form ng-cloak>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <span>Delete Image</span>
+        <span flex></span>
+        <!--<md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+        </md-button>-->
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+      <div class="md-dialog-content">
+        <h4>Are you want to delete the image?</h4>
+      </div>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <md-button ng-click="no()">
+      No
+      </md-button>
+      <md-button ng-click="delete()">
+        Yes
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
+<style>
+    md-toolbar.md-default-theme:not(.md-menu-toolbar), md-toolbar:not(.md-menu-toolbar){
+            background-color: #33cccc;
+            color: rgba(255,255,255,0.87);
+    }
+    </style>
+</script>
+
+
+
+
+
+<script type="text/ng-template" id="fullimage.html">
+   <md-dialog aria-label="" style="min-width: auto;">
+  <form ng-cloak>
+   
+<md-dialog-actions layout="row">
+     
+      <span flex></span>
+      <md-button ng-click="cancel()">
+       Close
+      </md-button>
+     
+    </md-dialog-actions>
+    <md-dialog-content>
+      <div class="md-dialog-content">
+      
+        <img style="margin: auto; max-width: 100%;" alt="" src="{{fullviewimg}}">
+      </div>
+    </md-dialog-content>
+
+    
+  </form>
+</md-dialog>
+</script>

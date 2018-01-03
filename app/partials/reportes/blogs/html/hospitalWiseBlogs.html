@@ -1,0 +1,150 @@
+<style>
+    .md-select-value>span:not(.md-select-icon)
+    {
+        color: #6e6e6e;
+        font-weight:700;
+        
+    }
+    md-select .md-select-value.md-select-placeholder 
+    {
+        border-width: 0 0 2px;
+        border-color: #33cccc;
+    }
+</style>
+<script type="text/javascript">
+    app.controller('FullBlogsCtrl', function($state,$scope,$stateParams, $filter, $rootScope,$http,commonService) {
+      
+       
+         if(sessionStorage.username=="" || sessionStorage.username == undefined){
+             console.log("venkat");
+                    $state.go("access.login");
+          }
+          else{ 
+              console.log($stateParams.teamId);
+            $rootScope.login_category=sessionStorage.category;
+              $http.get(sessionStorage.IonServer+"/index.php/request?action=clientBlogsDisplay&module=ionize&resource=posts&category_id="+$stateParams.categoryId).then(function success(response) {                 
+                $scope.blogs=response.data.description;
+                $scope.totalItems=response.data.description.length;
+                $scope.currentPage = 1;
+                $scope.entryLimit = 10; // items per page
+                $scope.noOfPages = Math.ceil($scope.totalItems / $scope.entryLimit);
+              });
+
+            commonService.getNewsLetterCount($stateParams.teamId).then(function(success){
+                console.log(success);
+                $scope.newsLetters=success.data.description;
+            })
+            $http.get(sessionStorage.IonServer+"/index.php/request?action=blogcounts&module=ionize&resource=posts&userid="+$stateParams.teamId+"&type=yearly").then(function success(response) {                 
+                console.log(response)
+                $scope.blogsByMonth=response.data.description;
+                // $scope.totalItems=response.data.description.length;
+                // $scope.currentPage = 1;
+                // $scope.entryLimit = 10; // items per page
+                // $scope.noOfPages = Math.ceil($scope.totalItems / $scope.entryLimit);
+              });
+           
+          }
+             
+    });
+
+   
+    app.filter('startBlogFrom', function () {
+	return function (input, start) {
+		if (input) {
+			start = +start;
+			return input.slice(start);
+		}
+		return [];
+	};
+    });
+   
+</script>
+
+<div class='content-wrapper' ng-init="app.settings.pagetitle = 'Full Blog Reports';" ng-controller="FullBlogsCtrl" >
+    <div class="col-lg-12">
+        <section class="box ">
+            <header class="panel_header">
+                <h2 class="title pull-left">Full Blog Reports</h2>
+            </header>
+            <div class="content-body padding-bottom-15">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12 table-responsive">
+
+                            <div class="col-md-7 col-sm-6 col-xs-12">
+                            <div class="input-group primary" inputgroup>
+                                <span class="input-group-addon">                
+                                <span class="arrow"></span>
+                                <i class="fa fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control search-page-input" placeholder="Search" ng-model="searchFilter">
+                            </div>
+                       </div>
+                     <div class="col-md-5 col-sm-6 col-xs-12">
+                        <nav class='pull-right search-paging'>
+                            <uib-pagination ng-model="currentPage" max-size="noOfPages" total-items="totalItems" items-per-page="entryLimit" class="pull-right"></uib-pagination>
+                        </nav>
+                    </div>
+                    <div class="clearfix"></div>
+                    <br>
+                        <table class="table table-striped" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width:30%">Title</th>
+                                    <!-- <th style="width:15%">Content</th> -->
+                                    <th style="width:15%">Created</th>
+                                    <th style="width:15%">Status</th>
+                                </tr>
+                            </thead>
+                            <tr ng-repeat="item in blogs | filter:searchFilter | filter:favoriteColor | startBlogFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
+                                <td>{{item.title}}</td>
+                                <!-- <td>{{item.content}}</td> -->
+                                <td>{{item.created}}</td>
+                                <td>{{item.status}}</td>
+                            </tr>
+                            
+                        </table>
+                        <h1>News Letters</h1>
+                        <table class="table table-striped" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width:30%">Month</th>
+                                    <!-- <th style="width:15%">Content</th> -->
+                                    <th style="width:15%">Total News Letters Created</th>
+                                    <th style="width:15%">Emails Sent</th>
+                                </tr>
+                            </thead>
+                            <tr ng-repeat="newsLetter in newsLetters">
+                                <td>{{newsLetter.Month}}</td>
+                                <!-- <td>{{item.content}}</td> -->
+                                <td>{{newsLetter.Count}}</td>
+                                <td>{{newsLetter.Emails}}</td>
+                            </tr>
+                            
+                        </table>
+                         <h1>Blogs By Mnoth Last One Year</h1>
+                        <table class="table table-striped" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width:30%">Month</th>
+                                    <!-- <th style="width:15%">Content</th> -->
+                                    <th style="width:15%">Published</th>
+                                    <th style="width:15%">Ionizing</th>
+                                    <th style="width:15%">Ionized</th>
+                                </tr>
+                            </thead>
+                            <tr ng-repeat="bymonth in blogsByMonth">
+                                <td>{{bymonth.month}}</td>
+                                <!-- <td>{{item.content}}</td> -->
+                                <td>{{bymonth.Publish}}</td>
+                                <td>{{bymonth.Ionizing}}</td>
+                                <td>{{bymonth.Ionized}}
+                            </tr>
+                            
+                        </table>
+                    </div>
+                </div>
+                <!-- <button type="button" ng-click="exportData()" class="btn btn-info">Download</button> -->
+            </div>
+        </section>
+    </div>
+</div>
