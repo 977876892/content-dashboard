@@ -85,8 +85,8 @@ app.factory('commonService', ['$http','$base64', function ($http,$base64) {
         },
         //ionize blogs api's
         ionizeBlogsService:function(){
-            console.log(sessionStorage.IonServer+"/index.php/request?action=ionize&module=ionize&resource=posts&group_id=4&ionize=0");
-           return $http({method:"get",url:sessionStorage.IonServer+"/index.php/request?action=ionize&module=ionize&resource=posts&group_id=4&ionize=0"});
+            console.log(sessionStorage.IonServer+"/index.php/request?action=ionize&module=ionize&resource=posts&group_id=20&ionize=1");
+           return $http({method:"get",url:sessionStorage.IonServer+"/index.php/request?action=ionize&module=ionize&resource=posts&group_id=20&ionize=1"});
         },
 
         getBlogComments:function(blogId){
@@ -159,6 +159,15 @@ app.factory('commonService', ['$http','$base64', function ($http,$base64) {
                             })
         },
         approveTheBlog:function(dataObject){
+            //dataObject.content=dataObject.content.replace(/<br\s*\/?>/gi,'&nbsp;');
+            dataObject.content=dataObject.content.replace(/&/g, "%26");
+            //dataObject.content=dataObject.content.replace(/"/g, "'")
+            console.log(dataObject);
+            //  return $http({
+			// 		url:sessionStorage.IonServer+"/index.php/request?action=approvepost&module=ionize&resource=posts",
+			// 		method:'PUT',
+			// 		params:dataObject
+			// 	})
            return $http({
 					url:sessionStorage.IonServer+"/index.php/request?action=approvepost&module=ionize&resource=posts",
 					method:'POST',
@@ -309,6 +318,7 @@ app.factory('commonService', ['$http','$base64', function ($http,$base64) {
            return $http.get(sessionStorage.IonServer+"/index.php/request?action=AssignedBlogsStatus&module=ionize&resource=posts&group_id=22&userid="+sessionStorage.USER_ID);
         },
         getIonizeBlogsForRM:function(){
+            console.log(sessionStorage.IonServer+"/index.php/request?action=ionize&module=ionize&resource=posts&group_id=4&ionize=0");
            return $http.get(sessionStorage.IonServer+"/index.php/request?action=ionize&module=ionize&resource=posts&group_id=4&ionize=0");
         },
         getWithOutKeywordsForRM:function(){
@@ -325,6 +335,10 @@ app.factory('commonService', ['$http','$base64', function ($http,$base64) {
         reportes_blogs:function(){
             console.log(sessionStorage.IonServer+'/index.php/request?action=publishreport&module=ionize&resource=posts');
           return $http.get(sessionStorage.IonServer+'/index.php/request?action=publishreport&module=ionize&resource=posts');
+        },
+         reportes_credits:function(){
+            console.log(sessionStorage.IonServer+'/index.php/request?action=getcredits&module=ionize&resource=posts&groupid=22');
+          return $http.get(sessionStorage.IonServer+'/index.php/request?action=getcredits&module=ionize&resource=posts&groupid=22');
         },
         getNewsLetterCount:function(teamId){
             return $http.get(sessionStorage.IonServer+"/index.php/request?action=blogchart&module=ionize&resource=posts&userid="+teamId+"&type=newsletters");

@@ -957,6 +957,10 @@ angular.module('app')
                         url: '/reportes_visits',
                         templateUrl: 'partials/reportes/visits/html/hospitallist.html'
                     })
+                     .state('app.tables.reportes_credits', {
+                        url: '/reportes_credits',
+                        templateUrl: 'partials/reportes/credits/html/reportes_credits.html'
+                    })
              //reports hospital full data tab
 
              //ion manager Settelment tab
@@ -984,6 +988,10 @@ angular.module('app')
                      .state('app.tables.hospital_leads_data', {
                         url: '/hospital_leads_data/{teamId:[0-9]{1,4}}',
                         templateUrl: 'partials/reportes/leeds/html/leadsListByHospital.html'
+                    })
+                      .state('app.tables.hospital_credits_fulldata', {
+                        url: '/hospital_credits_fulldata/{teamId:[0-9]{1,4}}',
+                        templateUrl: 'partials/reportes/credits/html/hospitalWiseCredits.html'
                     })
                     //  .state('app.ui.my_approve_blogs', {  hospital_leads_data
                     //     url: '/my_approve_blogs',

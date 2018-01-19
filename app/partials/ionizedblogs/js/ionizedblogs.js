@@ -14,43 +14,19 @@
 				$rootScope.assignedBlogIndex=0;
 				$rootScope.currentPageForAssignedBlogs=1;
 		//for assign blog start from first page
-		if(sessionStorage.category==22)
+		  commonService.ionizeBlogsService().then(function mySuccess(response){
+		if(typeof response.data.description=="undefined")
 		{
-			getIonizeBlogsForRM();
+			$scope.items=[];
+            $scope.totalItems=0;
 		}
 		else{
-			ionizeblogs();
-		}
-		
+			$scope.items=response.data.description;
+            $scope.totalItems=response.data.description.length;
+		}	
+            });
 	}	
-	function getIonizeBlogsForRM(){
-		commonService.getIonizeBlogsForRM().then(function mySuccess(response){
-		if(typeof response.data.description=="undefined")
-		{
-			$scope.items=[];
-            $scope.totalItems=0;
-		}
-		else{
-			$scope.items=response.data.description;
-            $scope.totalItems=response.data.description.length;
-		}	
-            });
-	}
 	
-	function ionizeblogs(){
-	
-    commonService.ionizeBlogsService().then(function mySuccess(response){
-		if(typeof response.data.description=="undefined")
-		{
-			$scope.items=[];
-            $scope.totalItems=0;
-		}
-		else{
-			$scope.items=response.data.description;
-            $scope.totalItems=response.data.description.length;
-		}	
-            });
-	}
 	
 	
 	 
