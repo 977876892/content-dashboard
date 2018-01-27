@@ -961,6 +961,10 @@ angular.module('app')
                         url: '/reportes_credits',
                         templateUrl: 'partials/reportes/credits/html/reportes_credits.html'
                     })
+                     .state('app.tables.reportes_email_newsletter', {
+                        url: '/reportes_email_newsletter',
+                        templateUrl: 'partials/reportes/email_newsletter/html/reportes_email_newsletter.html'
+                    })
              //reports hospital full data tab
 
              //ion manager Settelment tab
@@ -992,6 +996,10 @@ angular.module('app')
                       .state('app.tables.hospital_credits_fulldata', {
                         url: '/hospital_credits_fulldata/{teamId:[0-9]{1,4}}',
                         templateUrl: 'partials/reportes/credits/html/hospitalWiseCredits.html'
+                    })
+                       .state('app.tables.email_newsletter_fulldata', {
+                        url: '/email_newsletter_fulldata/{teamId:[0-9]{1,4}}',
+                        templateUrl: 'partials/reportes/email_newsletter/html/hospitalWiseNewsletter.html'
                     })
                     //  .state('app.ui.my_approve_blogs', {  hospital_leads_data
                     //     url: '/my_approve_blogs',

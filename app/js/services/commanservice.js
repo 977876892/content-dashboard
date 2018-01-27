@@ -340,6 +340,10 @@ app.factory('commonService', ['$http','$base64', function ($http,$base64) {
             console.log(sessionStorage.IonServer+'/index.php/request?action=getcredits&module=ionize&resource=posts&groupid=22');
           return $http.get(sessionStorage.IonServer+'/index.php/request?action=getcredits&module=ionize&resource=posts&groupid=22');
         },
+         reportes_email_newletter:function(){
+            console.log(sessionStorage.IonServer+'/index.php/request?action=blogchart&module=ionize&resource=posts&type=newsletters');
+          return $http.get(sessionStorage.IonServer+'/index.php/request?action=blogchart&module=ionize&resource=posts&type=newsletters');
+        },
         getNewsLetterCount:function(teamId){
             return $http.get(sessionStorage.IonServer+"/index.php/request?action=blogchart&module=ionize&resource=posts&userid="+teamId+"&type=newsletters");
         },
