@@ -68,16 +68,17 @@
                                 <div style="height: 200px;overflow:hidden;" id="{{$index}}">
                                 <h3>
                                 <a ng-click="assignedBlogFullview(item.id,$index)" style="color:#33cccc">{{item.title}}</a>
-                                 <br>
-                                 <span style="font-size:16px;color:#c2b3b3;">Writer: </span> <span style="font-size:18px">{{item.contentwriter}}</span>&nbsp&nbsp&nbsp&nbsp
-                                    <span style="font-size:16px;color:#c2b3b3;"> Clinic Name : </span><span style="font-size:16px">{{item.clinic_name}}</span>&nbsp&nbsp&nbsp&nbsp
-                                    <span style="font-size:16px;color:#c2b3b3;" ng-if="item.modified!=null">Modified : </span><span style="font-size:16px">{{item.modified}}</span>&nbsp&nbsp&nbsp&nbsp
-                                    <span style="font-size:16px;color:#c2b3b3;">State : </span><span style="font-size:16px">{{item.state}}</span>&nbsp&nbsp&nbsp&nbsp
-                                    <span style="font-size:15px;" ng-if="item.keywords!=''&&item.keywords!=null"><b>Key Words- </b>{{item.keywords}}</span>
-                                </h3>
+                                 </h3>
+                                 <span style="font-size:15px;"><b>Writer - </b></span> <span style="font-size:15px">{{item.contentwriter}}</span>&nbsp&nbsp&nbsp&nbsp
+                                
+                                    <span style="font-size:15px;"><b>Clinic Name -</b></span><span style="font-size:15px">{{item.clinic_name}}</span>&nbsp&nbsp&nbsp&nbsp
+                                    <span style="font-size:15px;" ng-if="item.modified!=null"><b>Modified -</b></span><span style="font-size:15px">{{item.modified}}</span>&nbsp&nbsp&nbsp&nbsp
+                                    <span style="font-size:15px;"><b>State -</b></span><span style="font-size:15px">{{item.state}}</span>&nbsp&nbsp&nbsp&nbsp
+                                    <span style="font-size:15px;" ng-if="item.keywords!=''&&item.keywords!=null"><b>Key Words-</b>{{item.keywords}}</span>
+                               
                                 <h5 ng-if="item.graphic_elapsed_date<0"><timer end-time="item.content_elapsed_date"><span ng-class="days==0?'timeout':'timein'" style="font-family: open sans-serif;">{{days}} days, {{hours}} hours, {{minutes}} minutes, {{seconds}} seconds.</span></timer></h5>
                                 <h5 ng-if="item.state=='Done' && item.graphic_elapsed_date>0"><timer end-time="item.graphic_elapsed_date"><span ng-class="days==0?'timeout':'timein'" style="font-family: open sans-serif;">{{days}} days, {{hours}} hours, {{minutes}} minutes, {{seconds}} seconds.</span></timer></h5>
-                                <img class="media-object" ng-src="{{item.image}}" ng-if="item.image!=''&& item.image!=defaultCoverImage">
+                                <img class="media-object" ng-src="{{item.image}}"  ng-if="item.image!=''&& item.image!=defaultCoverImage && item.image!= 'null'">
                                 <p class="blog-content" ng-bind-html="item.content" style="word-wrap: break-word;"></p>
                                 </div>
                                 <a ui-sref="app.ui.assignedBlogView({blogId:item.id})" class="btn btn-primary" style="background:#33cccc;margin-top: 3px;"><span>Read more</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>

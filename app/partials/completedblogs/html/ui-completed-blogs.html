@@ -31,8 +31,10 @@
                         <div class="blog_post" ng-repeat="item in filtered = items | filter:search | startBlogFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
                             <div style="height: 150px;overflow: hidden;">
                             <h3><a ui-sref="app.ui.completedBlogView({blogId:item.blogid})" style="color:#33cccc">{{item.title}}</a></h3>
+                              <span style="font-size:15px;"><b>Clinic Name- </b>{{item.clinic_name}}</span>&nbsp;&nbsp;&nbsp;
                              <span style="font-size:15px;" ng-if="item.keywords!=''&&item.keywords!=null"><b>Key Words- </b>{{item.keywords}}</span>
-                             <img src="{{item.image}}" ng-show="item.image!='' && item.image!=defaultCoverImage" style="max-width:100%;"/>
+                             <br>
+                             <img src="{{item.image}}" ng-show="item.image!='' && item.image!=defaultCoverImage && item.image!= 'null'" style="max-width:100%;"/>
                             <p ng-bind-html="item.content" style="word-wrap: break-word;"></p>
                             </div>
                               <a ui-sref="app.form.textAngularForReview({blogId:item.blogid})" class="btn btn-primary" style="background:#33cccc" ng-hide="login_category==22"><span>Edit</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>

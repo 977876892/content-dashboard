@@ -418,11 +418,11 @@ angular.module('app')
                                                     }*/
                     })
                      .state('app.form.textAngular',{
-                                    url:'/textAngular/{blogId:[0-9]{1,4}}/:graphicStatus',
+                                    url:'/textAngular/{blogId:[0-9]{1,100}}/:graphicStatus',
                                     templateUrl:'textangular/textAngular.html'
                                 })
                      .state('app.form.textAngularForReview',{
-                        url:'/textAngularForReview/{blogId:[0-9]{1,4}}/:c',
+                        url:'/textAngularForReview/{blogId:[0-9]{1,100}}/:c',
                         templateUrl:'textangular/textAngular-Review.html'  
                     })
                     .state('app.form.masks', {
@@ -462,7 +462,7 @@ angular.module('app')
                         }
                     })
                      .state('fullviewprofiles', {
-                        url: '/fullviewprofiles/{blogId:[0-9]{1,4}}',
+                        url: '/fullviewprofiles/{blogId:[0-9]{1,100}}',
                         templateUrl: 'partials/profiles/profile_fullview.html',
                         //controller:'fullviewctrl'
                     })
@@ -544,7 +544,7 @@ angular.module('app')
                         }
                     })
                       .state('app.ui.ionizedBlogView', {
-                        url: '/ionizedBlogItem/{blogId:[0-9]{1,4}}',
+                        url: '/ionizedBlogItem/{blogId:[0-9]{1,100}}',
                         templateUrl: 'partials/ionizedblogs/html/ui-blog-item-ionized.html',
                         resolve: {
                             deps: ['$ocLazyLoad',
@@ -577,7 +577,7 @@ angular.module('app')
                         }
                     })
                      .state('app.ui.assignedBlogView', {
-                        url: '/assignedblog/{blogId:[0-9]{1,4}}',
+                        url: '/assignedblog/{blogId:[0-9]{1,100}}',
                         templateUrl: 'partials/assignedblogs/html/assigned-blog-item.html',
                         resolve: {
                             deps: ['$ocLazyLoad',
@@ -609,7 +609,7 @@ angular.module('app')
                         }
                     })
                     .state('app.ui.blogview', {
-                        url: '/blog/{blogId:[0-9]{1,4}}/:category_id/:userId',
+                        url: '/blog/{blogId:[0-9]{1,100}}/:category_id/:userId',
                         templateUrl: 'partials/blogs/html/ui-blog-item.html',
                         resolve: {
                             deps: ['$ocLazyLoad',
@@ -621,7 +621,7 @@ angular.module('app')
                     })
                    
 		    .state('app.ui.myblogview', {
-                        url: '/myblog/{blogId:[0-9]{1,4}}',
+                        url: '/myblog/{blogId:[0-9]{1,100}}',
                         templateUrl: 'partials/myblogs/html/ui-blog-myblogview-item.html',
                         resolve: {
                             deps: ['$ocLazyLoad',
@@ -633,9 +633,9 @@ angular.module('app')
                     })
                     //blog view for grafic designer
                      .state('app.ui.blogViewForGraphic', {
-                        url: '/graphicblogs/{blogId:[0-9]{1,4}}/:contentStatus/:graphicStatus',
+                        url: '/graphicblogs/{blogId:[0-9]{1,100}}/:contentStatus/:graphicStatus',
                         templateUrl: 'partials/myblogs/html/ui-blog-item-graphic.html',
-                        resolve: {
+                        resolve: { 
                             deps: ['$ocLazyLoad',
                                 function($ocLazyLoad) {
                                     return $ocLazyLoad.load(['../bower_components/font-awesome/css/font-awesome.css']);
@@ -644,7 +644,7 @@ angular.module('app')
                         }
                     })
                      .state('app.ui.completedBlogView', {
-                        url: '/completedBlogItem/{blogId:[0-9]{1,4}}',
+                        url: '/completedBlogItem/{blogId:[0-9]{1,100}}',
                         templateUrl: 'partials/completedblogs/html/ui-blog-item-completed.html',
                         resolve: {
                             deps: ['$ocLazyLoad',
@@ -655,7 +655,7 @@ angular.module('app')
                         }
                     })
                     .state('app.ui.reviewBlog', {
-                        url: '/reviewBlog/{blogId:[0-9]{1,4}}',
+                        url: '/reviewBlog/{blogId:[0-9]{1,100}}',
                         templateUrl: 'partials/reviewblogs/html/ui-blog-item-review.html',
                         resolve: {
                             deps: ['$ocLazyLoad',
@@ -718,7 +718,7 @@ angular.module('app')
                         templateUrl: 'partials/mail-compose.html'
                     })
                     .state('app.mail.view', {
-                        url: '/{mailId:[0-9]{1,4}}',
+                        url: '/{mailId:[0-9]{1,100}}',
                         templateUrl: 'partials/mail-view.html'
                     })
                     .state('app.charts', {
@@ -978,27 +978,27 @@ angular.module('app')
                     })
             //ion manager settlement tab
                      .state('app.tables.hospital_blogs_fulldata', {
-                        url: '/hospital_blogs_fulldata/{categoryId:[0-9]{1,4}}/{teamId:[0-9]{1,4}}',
+                        url: '/hospital_blogs_fulldata/{categoryId:[0-9]{1,100}}/{teamId:[0-9]{1,4}}',
                         templateUrl: 'partials/reportes/blogs/html/hospitalWiseBlogs.html'
                     })
                      .state('app.tables.hospital_questions_fulldata', {
-                        url: '/hospital_questions_fulldata/{teamId:[0-9]{1,4}}',
+                        url: '/hospital_questions_fulldata/{teamId:[0-9]{1,100}}',
                         templateUrl: 'partials/reportes/query/html/hospitalwiseQueries.html'
                     })
                       .state('app.tables.hospital_visits_fulldata', {
-                        url: '/hospital_visits_fulldata/{teamId:[0-9]{1,4}}',
+                        url: '/hospital_visits_fulldata/{teamId:[0-9]{1,100}}',
                         templateUrl: 'partials/reportes/visits/html/hospitalwiseVisits.html'
                     })
                      .state('app.tables.hospital_leads_data', {
-                        url: '/hospital_leads_data/{teamId:[0-9]{1,4}}',
+                        url: '/hospital_leads_data/{teamId:[0-9]{1,100}}',
                         templateUrl: 'partials/reportes/leeds/html/leadsListByHospital.html'
                     })
                       .state('app.tables.hospital_credits_fulldata', {
-                        url: '/hospital_credits_fulldata/{teamId:[0-9]{1,4}}',
+                        url: '/hospital_credits_fulldata/{teamId:[0-9]{1,100}}',
                         templateUrl: 'partials/reportes/credits/html/hospitalWiseCredits.html'
                     })
                        .state('app.tables.email_newsletter_fulldata', {
-                        url: '/email_newsletter_fulldata/{teamId:[0-9]{1,4}}',
+                        url: '/email_newsletter_fulldata/{teamId:[0-9]{1,100}}',
                         templateUrl: 'partials/reportes/email_newsletter/html/hospitalWiseNewsletter.html'
                     })
                     //  .state('app.ui.my_approve_blogs', {  hospital_leads_data
@@ -1012,7 +1012,7 @@ angular.module('app')
                         
                     })
                       .state('app.ui.my_approve_blogs_fullview', {
-                        url: '/my_approve_blogs_fullview/{blogId:[0-9]{1,4}}',
+                        url: '/my_approve_blogs_fullview/{blogId:[0-9]{1,100}}',
                         templateUrl: 'partials/my_approve_blogs/my_approve_blog_fullview.html',
                         
                     })

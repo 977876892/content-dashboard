@@ -116,6 +116,19 @@
 									.targetEvent()
 								)
 						})
+							 commonService.getAllgraphicDesigners().then(function(success){
+                $scope.graphicDesigner=success.data.description;    
+            },function(error){
+                $mdDialog.show(
+                      $mdDialog.alert()
+                        .parent(angular.element(document.querySelector('#popupContainer')))
+                        .clickOutsideToClose(true)
+                        .textContent('Your Not Getting Graphic Designers Please Check Your Internet Connection And Then Contact Medicodesk.')
+                        .ok('Ok')
+                        .targetEvent()
+                    )
+                console.log(error);
+            })
 	//select option
 	} 
 
@@ -197,7 +210,65 @@
 				$scope.status = 'You cancelled the dialog.';
 			});
 	}
-	
+	$scope.assignToGraphicDesigner=function(item){
+		$scope.assigntofree=item;
+		$mdDialog.show({
+				controller: assignToGraphicDesignerDialog,
+				templateUrl: 'graphicDesignerTemplate.html',
+				clickOutsideToClose:true,
+				//fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+				})
+				.then(function(answer) {
+				$scope.status = 'You said the information was "' + answer + '".';
+				}, function() {
+				$scope.status = 'You cancelled the dialog.';
+			});
+	}
+	function assigntoGraphicDesigner(selectedprofile,ev){
+		var assigntofree=$scope.assigntofree;
+		var dataObject={
+                                'user_id':assigntofree.created_by,
+								'blogid':assigntofree.postid,
+								'group_id':19,
+								'category_id':assigntofree.category_id,	
+								'created_by':selectedprofile           
+		}
+		commonService.assignTheBlog(dataObject).then(function(success){
+						            console.log(success);
+									$mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent('Blog is Assigned To Graphic Designer successfully.')
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    ).then(function() {
+										gettingAllBlogs();
+                                }, function() {
+                                });
+								 	
+								//location.reload(true);
+								//window.location.reload();
+							},function(error){
+								$mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent('Blog is Not Assigned To Content Writer Please Check Your Internet Connection And Then Contact Medicodesk.')
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    ).then(function() {
+                                 
+                                }, function() {
+                                });
+								console.log(fail);
+							})
+					// },
+					// function(error){
+					// 	console.log(error);
+					// })
+							
+    }
 	function freelancerApiCall(selectedprofile,ev){
 		var assigntofree=$scope.assigntofree;
 		var dataObject={
@@ -252,6 +323,17 @@
             $scope.ApproveBlog = function(selectedoperator) {
 				console.log(selectedoperator);
             freelancerApiCall(selectedoperator);
+            $mdDialog.hide();
+            };
+		}
+		
+	 function assignToGraphicDesignerDialog($scope, $mdDialog) {
+            $scope.answer = function(answer) {
+            $mdDialog.hide(answer);
+            };
+            $scope.ApproveBlog = function(selectedoperator) {
+				console.log(selectedoperator);
+            assigntoGraphicDesigner(selectedoperator);
             $mdDialog.hide();
             };
         }

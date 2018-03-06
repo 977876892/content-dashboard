@@ -52,6 +52,12 @@ app.factory('commonService', ['$http','$base64', function ($http,$base64) {
                     headers: {'Content-Type': undefined}
                 })
         },
+        uploadIonizedCoverImage:function(fd){
+            return $http.post(sessionStorage.IonServer+"/index.php/request?action=post&module=user&resource=upload", fd, {
+                    transformRequest: angular.identity,
+                    headers: {'Content-Type': undefined}
+                })
+        },
         uploadImages:function(fd){
              return $http.post(sessionStorage.IonServer+"/index.php/request?action=image&module=ionize&resource=posts", fd, {
                                     transformRequest: angular.identity,
@@ -68,15 +74,15 @@ app.factory('commonService', ['$http','$base64', function ($http,$base64) {
             return $http.get(sessionStorage.IonServer+"/index.php/request?action=deleteimg&module=ionize&resource=posts&blog_id="+blogId+"&type=coverimg");
         },
         imagesCompleted:function(blogId){
-            console.log(blogId);
-            return $http({
-                    url:sessionStorage.IonServer+"/index.php/request?action=updateblog&module=ionize&resource=posts",
-                    method:'GET',
-                    params:{
-                    'blog_id':blogId,
-                    'state':'graphicdone'
-                    }
-			})
+                    console.log("images completed");
+                      return $http({
+                                url:sessionStorage.IonServer+"/index.php/request?action=updateblog&module=ionize&resource=posts",
+                                method:'GET',
+                                params:{
+                                'blog_id':blogId,
+                                'state':'graphicdone'
+                                }
+                            })
         },
         //my blogs api's
          completedBlogsService:function(){
@@ -90,9 +96,9 @@ app.factory('commonService', ['$http','$base64', function ($http,$base64) {
         },
 
         getBlogComments:function(blogId){
-            console.log(sessionStorage.IonServer+"/index.php/request?action=fullview&module=ionplanner&resource=planner&type=blog&id="+blogId);
+            console.log(sessionStorage.IonServer+"/index.php/request?action=fullview&module=ionplanner&resource=planner&type=blog&id="+blogId+"&userid="+sessionStorage.USER_ID);
             //sessionStorage.IonServer+"index.php/request?action=fullview&module=ionplanner&resource=planner&userid="+sessionStorage.USER_ID+"&blog_id="+blogId
-            return $http.get(sessionStorage.IonServer+"/index.php/request?action=fullview&module=ionplanner&resource=planner&type=blog&id="+blogId);
+            return $http.get(sessionStorage.IonServer+"/index.php/request?action=fullview&module=ionplanner&resource=planner&type=blog&id="+blogId+"&userid="+sessionStorage.USER_ID);
         },
         postComment:function(blogid,comment,privatecomm){
             console.log(privatecomm);
@@ -107,7 +113,8 @@ app.factory('commonService', ['$http','$base64', function ($http,$base64) {
                             public:privatecomm,
                             usr:sessionStorage.username,
                             pwd:$base64.encode(sessionStorage.password),
-                            encode:true
+                            encode:true,
+                            userid:sessionStorage.USER_ID
                         }
                     }) 
          
@@ -143,6 +150,7 @@ app.factory('commonService', ['$http','$base64', function ($http,$base64) {
         },
         
         ionizetheBlog:function(dataObject){
+            //dataObject.title=dataObject.title.replace(/&/g, "%26");
             return $http({
                               url:sessionStorage.IonServer+"/index.php/request?action=updateblog&module=ionize&resource=posts",
                               method:'POST',
@@ -159,8 +167,10 @@ app.factory('commonService', ['$http','$base64', function ($http,$base64) {
                             })
         },
         approveTheBlog:function(dataObject){
+            console.log(dataObject);
             //dataObject.content=dataObject.content.replace(/<br\s*\/?>/gi,'&nbsp;');
             dataObject.content=dataObject.content.replace(/&/g, "%26");
+            dataObject.title=dataObject.title.replace(/&/g, "%26");
             //dataObject.content=dataObject.content.replace(/"/g, "'")
             console.log(dataObject);
             //  return $http({
@@ -279,6 +289,7 @@ app.factory('commonService', ['$http','$base64', function ($http,$base64) {
 
         //in editor used api's
         saveAsDraft:function(dataObject){
+            console.log(dataObject);
            return $http({
                       url:sessionStorage.IonServer+"/index.php/request?action=updateblog&module=ionize&resource=posts",
                       method:'POST',

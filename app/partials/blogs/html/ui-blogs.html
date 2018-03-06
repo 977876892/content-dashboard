@@ -75,19 +75,22 @@
                         <!--<div class="blog_post" ng-repeat="item in filtered = items | filter:title | startBlogFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">-->
                             <div class="blog_post blog_space" ng-repeat="item in items | filter:searchFilter | startBlogFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
                                 <div style="height: 160px;overflow: hidden;" id="{{$index}}"> 
-                                <h3>
+                                <h3> 
                                 <a ng-click="openFullView(item.postid,item.category_id,item.created_by,$index)" style="color:#33cccc;">{{item.title}}</a>
                                  <!-- &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp -->
-                                 <span style="font-size:10px;"><b>Created Date- </b>{{item.created}}</span>
-                                 &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <span style="font-size:20px;">{{item.clinic_name}}</span>
-                                </h3>
+                                  </h3>
+                                   <span style="font-size:15px;"><b>Created Date- </b>{{item.created}}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                                <span style="font-size:15px;"><b>Blog Type -</b> </span><span style="font-size:15px;">{{item.blog_type}}</span>
+                                 &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <span style="font-size:15px;"><b>Clinic Name -</b> </span><span style="font-size:15px;">{{item.clinic_name}}</span>
+                               
                                 <h5>{{item.textplain}}</h5>
-                                <img class="media-object" ng-src="{{item.coverimage}}" ng-show="item.coverimage != defaultCoverImage">
+                                <img class="media-object" ng-src="{{item.coverimage}}" ng-show="item.coverimage != defaultCoverImage && item.coverimage != 'null'">
                                 <p class="blog-content" ng-bind-html="item.description" style="word-wrap: break-word;"></p>
                                 </div>
                                 <a ng-click="openFullView(item.postid,item.category_id,item.created_by,$index)" class="btn btn-primary" style="background:#33cccc;margin-top: 3px;"><span>Read more</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>                                 
                                 <a ng-click="assigntome($event,item)" class="btn btn-primary" style="background:#33cccc;margin-top: 3px;" ng-show="login_category!=20 && login_category!=22"><span>Assign To Me</span>  &nbsp;</a>
                                 <a ng-click="assigntofreelancer(item)" class="btn btn-primary" style="background:#33cccc;margin-top: 3px;" ng-show="login_category==20"><span>Assign To Content Writer</span>  &nbsp;</a></span>
+                                <a ng-click="assignToGraphicDesigner(item)" class="btn btn-primary" style="background:#33cccc;margin-top: 3px;" ng-show="login_category==20"><span>Assign To Graphic Designer</span>  &nbsp;</a></span>
                                 <hr style="border-top: 1px solid #33cccc;">
                         </div>
                         <!-- end -->
@@ -100,6 +103,58 @@
 
 
 		
+<script type="text/ng-template" id="graphicDesignerTemplate.html"><md-dialog aria-label="Images"  ng-controller="BlogPageCtrl">
+  <form>
+    <md-toolbar>
+      <div class="md-toolbar-tools" style="background:#33cccc;">
+        <h2 style="color: white;"> Assign to Graphic Designer</h2>
+        <span flex></span>
+      </div>
+    </md-toolbar>
+    <md-dialog-content style="width: 700px;">
+        <span style="margin-left: 237px;">Select Graphic Designer:</span>
+        <select ng-model="selectedWriter" style="margin-top: 18px;">
+        <option ng-repeat="profile in graphicDesigner" value="{{profile.id}}">{{profile.name}}</option>
+    </select>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+     
+      <span flex></span>
+      <md-button ng-click="answer('not useful')" >
+        Cancel
+      </md-button>
+      <md-button ng-click="ApproveBlog(selectedWriter)" style="margin-right:20px;" >
+        submit
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
+<style type="text/css">
+        .rating{
+  color: #a9a9a9;
+  margin: 0;
+  padding: 10px;
+}
+
+ul.rating {
+  display: inline-block;
+}
+
+.rating li {
+  list-style-type: none;
+  display: inline-block;
+  padding: 1px;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.rating .filled {
+  color: #33cccc;
+}
+    </style>
+</script>
 <script type="text/ng-template" id="freelancerTemplate.html"><md-dialog aria-label="Images"  ng-controller="BlogPageCtrl">
   <form>
     <md-toolbar>

@@ -94,7 +94,8 @@
                                 <i class="fa fa-comment"></i> <a href="#comments">3 comments</a> &nbsp;&nbsp;&nbsp;&nbsp;
                              <i class="fa fa-tags"></i> <a href="#">responsive</a> <a href="#">web</a> <a href="#">mobile</a>
                             </p>--> 
-                            <img class="media-object" ng-src="{{coverimg}}" ng-if="coverimg!=defaultCoverImage">
+                            <br>
+                            <img class="media-object" ng-src="{{coverimg}}" ng-if="coverimg!=defaultCoverImage && coverimg != 'null'">
                             <div class="blog-content"><p ng-bind-html="content" style="word-wrap: break-word;margin-top: 10px; "></p>
                              
                             </div>

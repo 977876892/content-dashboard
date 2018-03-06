@@ -76,17 +76,20 @@
                              <div style="display:inline-block;float:right;" ng-if="contentStatus==4&&graphicStatus==5">
                                  <button type="submit" class="btn btn-primary" style="background-color: #33cccc;" ng-click="saveBlogAsIonize()">Ionize</button>
                              </div>
+                            <div style="display:inline-block;float:right;" ng-if="contentStatus!=4&&graphicStatus!=5">
+                                 <button type="submit" class="btn btn-primary" style="background-color: #33cccc;" ng-click="imagesCompleted()">Done</button>
+                            </div>
                              
-                            <img ng-src="{{coverimage}}" ng-show="coverimage!=''&& coverimage != defaultCoverImage" ng-dblclick="deleteCoverImage()"/>
+                            <img ng-src="{{coverimage}}" ng-show="coverimage!=''&& coverimage != defaultCoverImage && coverimage != 'null'" ng-dblclick="deleteCoverImage()"/>
                             <div class="blog-content"><p ng-bind-html="content" style="word-wrap: break-word;"></p></div>
                         </div>
                         <!-- end -->
                         <input type="text" ng-model="driver_link" placeholder="Insert Drive Link">
-                        <button ng-click="driverlink(driver_link)">Submit</button>
+                        <!-- <button ng-click="driverlink(driver_link)">Submit</button> -->
                         <br>
                       <a target="_blank" ng-href="{{drive}}">{{drive}}</a>
                         <div layout-padding flex>
-                                    <md-content>
+                                    <md-content> 
                                         <lf-ng-md-file-input lf-files="filesOnUploadCover" lf-on-file-click="onFileClick" lf-on-file-remove="onFileRemove" lf-api="api999" preview drag multiple lf-drag-and-drop-label="Drag Cover Image Here"></lf-ng-md-file-input>
                                     </md-content>
 
@@ -139,6 +142,7 @@
                     $state.go("access.login");
             }
             else{
+                    $scope.driver_link="";
                     $scope.buttonDisable=false;
                     $rootScope.login_category=sessionStorage.category;
                     $scope.contentStatus=$stateParams.contentStatus;
@@ -160,6 +164,7 @@
             }
                 function graphicDesignerFullView(){
                      commonService.blogFullView($stateParams.blogId).then(function(success){
+                        $scope.blog=success.data.description;
                         $scope.content=success.data.description.content;
                         $scope.title=success.data.description.title;
                         $scope.coverimage=success.data.description.coverimage;
@@ -326,6 +331,7 @@
         }
         $scope.disableCoverImageButton=false;
         $scope.uploadCoverImage=function(uploadCover){
+          console.log(uploadCover);
             var fd = new FormData();
             fd.append('file',uploadCover);
             fd.append('blog_id',$stateParams.blogId);
@@ -413,6 +419,87 @@
                     })
                 });
                   //console.log(htmlContent);
+              }
+                 $scope.imagesCompleted=function(){
+				  // console.log(item);
+                            var confirm = $mdDialog.confirm()
+                            .title('If images are completed click yes else no.')
+                            .ok('Yes')
+                            .cancel('No'); 
+			    $mdDialog.show(confirm).then(function() {
+                if($scope.driver_link!='')
+                {
+                        var link=$scope.blog.content +"<br> <a href="+'"'+$scope.driver_link+'"'+" target='_blank'>Google Drive Link</a>";
+                        var today_date=new Date();
+                        var dataObject={
+                          'title':$scope.blog.title,
+                          'content':link,
+                          'blog_id':$stateParams.blogId,
+                          'modified':today_date.getFullYear()+"-"+(today_date.getMonth()+1)+"-"+today_date.getDate(),
+                          'state':'draft',
+                          'userid':sessionStorage.USER_ID
+                        }
+                        commonService.saveAsDraft(dataObject).then(function(success){
+                               console.log(success);
+							   commonService.imagesCompleted($stateParams.blogId).then(function(success){
+								$mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent("Images are delivered successfully.")
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    ).then(function() {
+                                        $state.go("app.ui.myblogs");
+										//myblogs();
+                                }, function() {
+                                });								
+                            },function(error){
+                                        $mdDialog.show(
+                                            $mdDialog.alert()
+                                                .parent(angular.element(document.querySelector('#popupContainer')))
+                                                .clickOutsideToClose(true)
+                                                .textContent("Please check internet and then Contact Medicodesk.")
+                                                .ok('Ok')
+                                                .targetEvent()
+                                            ).then(function() {
+                                                myblogs();
+                                        }, function() {
+                                        });
+                            })
+                        });
+                }
+                else{
+							commonService.imagesCompleted($stateParams.blogId).then(function(success){
+								$mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent("Images are delivered to content writer successfully.")
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    ).then(function() {
+                                        $state.go("app.ui.myblogs");
+										//myblogs();
+                                }, function() {
+                                });
+                                },function(error){
+								$mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent("Please check internet and then Contact Medicodesk.")
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    ).then(function() {
+										myblogs();
+                                }, function() {
+                                });
+                            })
+                }
+                  },function() {
+                    
+                  });	
               }
         
     })

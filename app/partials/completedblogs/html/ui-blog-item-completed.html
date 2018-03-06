@@ -20,7 +20,7 @@
                         <!-- start -->
                         <div class="blog_post full_blog_post">
                             <h3 style="color:#33cccc" class="ng-binding">{{title}}</h3>
-                            <img ng-src="{{coverimage}}" ng-show="coverimage!=''&& coverimage!=defaultCoverImage"/>
+                            <img ng-src="{{coverimage}}" ng-show="coverimage!=''&& coverimage!=defaultCoverImage && coverimage != 'null'"/>
                             <div class="blog-content"><p ng-bind-html="content" style="word-wrap: break-word;"></p></div><hr>
                              <a ui-sref="app.form.textAngularForReview({blogId:blogid})" class="btn btn-primary" style="background:#33cccc" ng-hide="login_category==22"><span>Edit</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>
                                 <a ng-click="approveBlogs()" class="btn btn-primary" style="background:#33cccc" ng-hide="login_category==22"><span>Approve</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>
@@ -226,7 +226,8 @@
 						'blog_id':$stateParams.blogId,
                         'coverimage':item.coverimage,
 						'modified':today_date.getFullYear()+"-"+(today_date.getMonth()+1)+"-"+today_date.getDate(),
-                        'key':sessionStorage.key
+                        'key':sessionStorage.key,
+                        'created_by':item.user_id
 					}
                 console.log(dataObject);
 				commonService.approveTheBlog(dataObject).then(function(success){

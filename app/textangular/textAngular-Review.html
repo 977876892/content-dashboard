@@ -71,12 +71,33 @@
             height: 300px;
             margin-top: 10px;
         }
+       .lf-ng-md-file-input .lf-ng-md-file-input-container .md-raised.lf-ng-md-file-input-button.lf-ng-md-file-input-button-brower{
+          width: 100%;
+        }
+        .lf-ng-md-file-input .lf-ng-md-file-input-container .lf-ng-md-file-input-caption{
+          padding: 0px !important;
+        }
+         .imgsize12{
+         width: 100%;
+        height: 300px !important;
+        margin-bottom: 23px;
+        overflow:auto;
+      }
+      .imgsize{
+        width: 100%;
+        height: auto;
+      }
        
     </style>
   
 
 <script>
     app.controller("demoController", ['$stateParams','$scope','$state','$rootScope','$mdDialog','$http','$q','commonService','$location','$base64', function($stateParams,$scope,$state,$rootScope,$mdDialog,$http,$q,commonService,$location,$base64) {
+      $scope.$watch('filesOnUploadCover.length',function(newVal,oldVal){
+                  console.log($scope.filesOnUploadCover[0].lfFile);
+                  $scope.uploadCover=$scope.filesOnUploadCover[0].lfFile;
+                  console.log($scope.uploadCover);
+         });
         var today_date=new Date();
         $scope.ionize_page=$stateParams.c;
          $scope.froalaOptions = {
@@ -107,6 +128,16 @@
         
                 // Allow to upload PNG and JPG.
                 imageAllowedTypes: ['jpeg', 'jpg', 'png'],
+                 events : {
+                   'froalaEditor.video.inserted': function (e, editor, $video) {
+                      var videoSource = $video.contents().get(0).src;
+                      //$video.html('<video src="'+videoSource+'" style="width: 600px;" controls="" class="fr-draggable">Your browser does not support HTML5 video.</video>');
+                      $video.html('<iframe width="640" height="360" src="'+videoSource+'&rel=0&showinfo=0" frameborder="0" scrolling="no" allowfullscreen=false></iframe>');
+                      
+                  }
+                 }
+
+                
         }
        
          $scope.contentChange=function(content){  
@@ -131,7 +162,7 @@
             //  $scope.actualLocation = $location.path();
             });  
       
-        if(typeof sessionStorage.username=="" || sessionStorage.username == undefined){
+        if(sessionStorage.username=="" || sessionStorage.username == undefined){
 				    $state.go("access.login");
 	      }
         else{
@@ -142,17 +173,15 @@
               $rootScope.previewContent='';
               //console.log(sessionStorage.IonServer+"/index.php/request?action=composeblog&module=ionize&resource=posts&blog_id="+$stateParams.blogId);
               if($stateParams.c == 1){
-                  $http.get(sessionStorage.IonServer+"/index.php?option=com_api&format=raw&app=easyblog&resource=blog&id="+$stateParams.blogId+"&key="+sessionStorage.key).then(function(success){
-                  console.log(sessionStorage.IonServer+"/index.php?option=com_api&format=raw&app=easyblog&resource=blog&id="+$stateParams.blogId+"&key="+sessionStorage.key);
-                  $rootScope.htmlContent=success.data.text;
-                  $rootScope.title=success.data.title;
-                  $rootScope.previewContent=$rootScope.htmlContent;
-                  $scope.coverimage=success.data.image.url;
-                   $scope.blog_category_id=success.data.category.categoryid;
-                //  $scope.keywords=success.data.description.keywords;
-                });
+                EditFullViewForEditor();
               }
               else{
+                console.log(sessionStorage.IonServer+"/index.php/request?action=composeblog&module=ionize&resource=posts&blog_id="+$stateParams.blogId)
+                 EditFullView();
+            }
+
+            function EditFullView(){
+              console.log(sessionStorage.IonServer+"/index.php/request?action=composeblog&module=ionize&resource=posts&blog_id="+$stateParams.blogId);
               $http.get(sessionStorage.IonServer+"/index.php/request?action=composeblog&module=ionize&resource=posts&blog_id="+$stateParams.blogId).then(function(success){
                   console.log(success);
                   $rootScope.htmlContent=success.data.description.content;
@@ -163,6 +192,17 @@
 
               });
             }
+            function EditFullViewForEditor(){
+                $http.get(sessionStorage.IonServer+"/index.php?option=com_api&format=raw&app=easyblog&resource=blog&id="+$stateParams.blogId+"&key="+sessionStorage.key).then(function(success){
+                  console.log(sessionStorage.IonServer+"/index.php?option=com_api&format=raw&app=easyblog&resource=blog&id="+$stateParams.blogId+"&key="+sessionStorage.key);
+                  $rootScope.htmlContent=success.data.text;
+                  $rootScope.title=success.data.title;
+                  $rootScope.previewContent=$rootScope.htmlContent;
+                  $scope.coverimage=success.data.image.url;
+                   $scope.blog_category_id=success.data.category.categoryid;
+                //  $scope.keywords=success.data.description.keywords;
+                });
+            }
               commonService.getImages($stateParams.blogId).then(function(response){
                   if(typeof response.data.description=="undefined")
                     $scope.pic=[];
@@ -170,7 +210,7 @@
                       $scope.pic=response.data.description;
                   
                });
-                  $http.get(sessionStorage.IonServer+"/index.php/request?action=comments&module=ionize&resource=posts&blog_id="+$stateParams.blogId).then(function(success){
+              commonService.getBlogComments($stateParams.blogId).then(function(success){
                $scope.comments=success.data.description;
                 //  console.log(success);
               },function(error){
@@ -191,6 +231,144 @@
             $scope.enableSubmit=true;
           }
         }
+
+$scope.disableCoverImageButton=false;
+  $scope.uploadCoverImage=function(){
+          console.log($scope.uploadCover); 
+          var fd = new FormData();
+                 
+      if($scope.uploadCover!=null && $scope.uploadCover.length!=0){
+                 $scope.disableCoverImageButton=true;
+           if($stateParams.c == 1){
+                  fd.append('userid',$stateParams.blogId);
+                  fd.append('username',sessionStorage.username);
+                  fd.append('password',$base64.encode(sessionStorage.password));
+                  fd.append('encode', 'true');
+                  fd.append('auth_key',sessionStorage.key);
+                  fd.append('file',$scope.uploadCover);
+                   console.log(fd);
+
+                commonService.uploadIonizedCoverImage(fd)
+                .success(function(response){
+                  console.log(response)
+                  console.log(response.description[0].url);
+
+         $scope.htmlContent=$scope.htmlContent.replace("& /g", "%26");
+         var today_date=new Date();
+         $scope.timezone=today_date.getFullYear()+"-"+(today_date.getMonth()+1)+"-"+today_date.getDate()+" "+today_date.getHours() + ":" + today_date.getMinutes() + ":" + today_date.getSeconds();
+
+         var dataObject={
+                      'title':$scope.title,
+                      'content':$scope.htmlContent,
+                      'image':response.description[0].url,
+                      'groupTags':'',
+                      'write_content_hidden':$scope.htmlContent,
+                      'write_content':$scope.htmlContent,
+                      'publish_up':$scope.timezone,
+                      'copyrights':'',
+                      'send_notification_emails':1,
+                      'created':$scope.timezone,
+                      'published':0,
+                      'subscription':1,
+                      'tags':'',
+                      'frontpage':1,
+                      'allowcomment':1,
+                      'category_id':$scope.blog_category_id,
+                      'publish_down':'0000-00-00 00:00:00',
+                      'blogpassword':'',
+                      'robots':'',
+                      'excerpt':'',
+                      'permalink':'',
+                      'key':sessionStorage.key,
+                      'id':$stateParams.blogId
+          }
+          console.log(dataObject);
+          $http({
+            url:sessionStorage.IonServer+"/index.php?option=com_api&format=raw&app=easyblog&resource=blog",
+            method:'PUT',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            transformRequest: function(obj) {
+              var str = [];
+              for (var p in obj)
+                str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+              return str.join("&");
+            },
+            data:dataObject
+          }).then(function(success){
+            console.log(success);
+          });
+          
+                     $mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent("Cover Image Uploaded successfully.")
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    ).then(function() {
+                                        $scope.disableCoverImageButton=false;
+                                             EditFullViewForEditor();
+
+                                        $scope.filesOnUploadCover=[];
+                                }, function() {
+                                });
+                    
+                }).error(function(error){
+                    $mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent("Cover Image Not Uploaded Please Contact Medicodesk.")
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    ).then(function() {
+                                }, function() {
+                                });
+                }); 
+              }
+            else{
+                  fd.append('file',$scope.uploadCover);
+                  fd.append('blog_id',$stateParams.blogId);
+                   console.log(fd);
+
+                 commonService.uploadCoverImage(fd)
+                .success(function(response){
+                     $mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent("Cover Image Uploaded successfully.")
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    ).then(function() {
+                                        $scope.disableCoverImageButton=false;
+                                             EditFullView();
+                                    //    commonService.blogFullView($stateParams.blogId).then(function(success){
+                                    //         $scope.coverimage=success.data.description.coverimage;
+                                            
+                                    //     })
+                                        $scope.filesOnUploadCover=[];
+                                }, function() {
+                                });
+                    
+                }).error(function(error){
+                    $mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent("Cover Image Not Uploaded Please Contact Medicodesk.")
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    ).then(function() {
+                                }, function() {
+                                });
+                }); 
+              }
+             }
+         }
+       
 
         $scope.preview=function(ev){
            $mdDialog.show({
@@ -484,7 +662,8 @@
 						'blog_id':$stateParams.blogId,
             'coverimage':$scope.coverimage,
 						'modified':today_date.getFullYear()+"-"+(today_date.getMonth()+1)+"-"+today_date.getDate(),
-            'key':sessionStorage.key
+            'key':sessionStorage.key,
+            'created_by':$scope.user_id
 					}
 			commonService.approveTheBlog(dataObject).then(function(success){
                     console.log(sessionStorage.IonServer+"/index.php/request?action=updateblog&module=ionize&resource=posts&blog_id="+$stateParams.blogId+"&state=rate&content_rate="+$rootScope.finalContentrating+"&graphic_rate="+$rootScope.finalGraphicRating);
@@ -648,6 +827,7 @@
   }
 
 
+
   $scope.onFileClick = function(obj,idx){
                     console.log(obj);
 
@@ -673,6 +853,7 @@
           <h5>Title Of The Blog</h5>
           <b><input type="text" ng-model="title" style="width: 100%;"></b>
           <br>
+          <img src="{{coverimage}}" style="margin-top: 10px;max-width: 100%;height: 200px;margin-bottom: 10px;" ng-if="coverimage != '' && coverimage != 'null'">
 <!--            
              <text-angular-toolbar name="toolbar1" class="toolbar" ta-toolbar="[['h1','h2','h3','p','quote','bold','italics','underline','ul','ol','justifyLeft', 'justifyCenter', 'justifyRight','justifyFull','insertLink','html','insertPhoto']]"></text-angular-toolbar>
                 
@@ -690,13 +871,26 @@
                         <button ng-show="category==4" ng-click="saveAsDraft(htmlContent)" type="button" class="form-submit ion-action btn btn-success" style="font-family: 'Opensans light', sans-serif;font-size: 16px;margin-top: 10px;background-color: rgb(51, 204, 204);">Save As Draft</button>                           
                         <button ng-show="category==4" ng-click="saveBlogAsIonize(htmlContent)" class="form-submit ion-action btn btn-success" style="font-family: 'Opensans light', sans-serif;font-size: 16px;margin-top: 10px;background-color: rgb(51, 204, 204);">I'M Done ! Send To Editor</button>
                         <button ng-show="category==20" ng-click="saveCompleteddBlogContent(htmlContent)" type="button" class="form-submit ion-action btn btn-success" style="font-family: 'Opensans light', sans-serif;font-size: 16px;margin-top: 10px;background-color: rgb(51, 204, 204);margin-left:30px;">Save</button>                           
-                        <button ng-show="category==20" ng-hide="ionize_page == 1" ng-click="approveTheBlog(htmlContent)" class="form-submit ion-action btn btn-success" style="font-family: 'Opensans light', sans-serif;font-size: 16px;margin-top: 10px;background-color: rgb(51, 204, 204);">Approve</button> 
+                        <button ng-if="category==20" ng-hide="ionize_page == 1" ng-click="approveTheBlog(htmlContent)" class="form-submit ion-action btn btn-success" style="font-family: 'Opensans light', sans-serif;font-size: 16px;margin-top: 10px;background-color: rgb(51, 204, 204);">Approve</button> 
         <br>
         <br>
-  
-   <div class="col-lg-12 imgsize" ng-if="pic.length>0">
-   <img ng-repeat="item in pic" ng-src="{{item.img}}" class="setImageSize" style="padding-left: 21px;">
+   <h2 ng-if="pic.length>0" style="color: #455A64;text-shadow: 2px 2px rgba(100, 100, 100, 0.1);text-transform: uppercase;"><b>Attached Images</b></h2>
+    <div class="col-lg-12 imgsize" ng-if="pic.length>0" ng-class="{'imgsize12' :pic.length > 4 }">
+   <img ng-repeat="item in pic" ng-src="{{item.img}}" class="setImageSize" style="padding-left: 21px;margin-bottom: 10px;">
    </div>
+      <!-- uplaod cover image -->
+     
+                <div layout-padding flex>
+                        <md-content> 
+                             <lf-ng-md-file-input lf-files="filesOnUploadCover" lf-on-file-click="onFileClick" lf-on-file-remove="onFileRemove" lf-api="api99559" preview drag multiple lf-drag-and-drop-label="Drag Cover Image Here"></lf-ng-md-file-input>
+                        </md-content>
+
+                </div>
+      <button type="submit" class="btn btn-primary" style="background-color: #33cccc;margin-bottom: 10px;" ng-click="uploadCoverImage()" ng-disabled="disableCoverImageButton">Upload Cover Image</button>
+ 
+
+
+  
                        <div ng-include="'partials/comments/commentslist.html'"></div>
    </div>
   </div>

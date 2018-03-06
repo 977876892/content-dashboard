@@ -20,7 +20,7 @@
                         <!-- start -->
                         <div class="blog_post full_blog_post">
                             <h3 style="color:#33cccc" class="ng-binding">{{title}}</h3>
-                            <img ng-src="{{coverimage}}" ng-show="coverimage!=''&& coverimage!=defaultCoverImage"/>
+                            <img ng-src="{{coverimage}}" ng-show="coverimage!=''&& coverimage!=defaultCoverImage && coverimage != 'null'"/>
                             <div class="blog-content"><p ng-bind-html="content" style="word-wrap: break-word;"></p></div><hr>
                              <a ng-click="openEditorView(blogid)"  class="btn btn-primary" style="background:#33cccc" ng-hide="login_category==22"><span>Edit</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a> 
                                

@@ -88,7 +88,7 @@
                             <!--<span>Created Date:{{created_date}}</span>-->
                             </h3>
                          
-                            <img class="media-object" ng-src="{{coverimg}}" ng-show="coverimg != defaultCoverImage">
+                            <img class="media-object" ng-src="{{coverimg}}" ng-show="coverimg != defaultCoverImage && coverimg != 'null'" >
                             <div class="blog-content"><p ng-bind-html="content" style="word-wrap: break-word;margin-top: 10px; "></p>
                              
                             </div>

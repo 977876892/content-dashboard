@@ -82,12 +82,13 @@
                            
                              <h3><a ui-sref="app.ui.myblogview({blogId:item.blogid})" style="color:#33cccc" ng-if="login_categary==4" ng-class="item.graphicstatus==6?'applyBackground':'notApplyBackground'">{{item.title}}</a> </h3>
                                  <span style="font-size:15px;"><b>Assign Date- </b>{{item.created_date}}</span>  &nbsp;&nbsp;&nbsp;
+                                 <span style="font-size:15px;"><b>Blog Type- </b>{{item.blog_type}}</span>&nbsp;&nbsp;&nbsp;
                                  <span style="font-size:15px;"><b>Clinic Name- </b>{{item.clinic_name}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                  <span style="font-size:15px;" ng-if="item.keywords!=''&&item.keywords!=null"><b>Key Words- </b>{{item.keywords}}</span>
                                   <h5><timer end-time="item.end_date"><span ng-class="days==0?'timeout':'timein'" style="font-family: open sans-serif;">{{days}} days, {{hours}} hours, {{minutes}} minutes, {{seconds}} seconds.</span></timer></h5>
                                 
                                  <br>
-                              <img src="{{item.image}}" ng-if="item.image!=''&& item.image != defaultCoverImage" style="max-width:100%;"/>
+                              <img src="{{item.image}}" ng-if="item.image!=''&& item.image != defaultCoverImage && item.image!='null'" style="max-width:100%;"/>
                             
                             <p ng-bind-html="item.content" style="height:100px;overflow:hidden;word-wrap: break-word;"></p>
                              </div>
@@ -97,7 +98,7 @@
                             <a ui-sref="app.form.textAngular({blogId:item.blogid,graphicStatus:item.graphicstatus})" class="btn btn-primary" style="background:#33cccc;margin-top: 3px;" ng-if="login_categary==4"><span>Edit</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>
                             <a ng-click="releaseTheBlog(item)" class="btn btn-primary" style="background:#33cccc;margin-top: 3px;" ng-if="item.graphic_designer==0 && login_categary==4"><span>Release</span></a>
                             <a ng-click="releaseTheBlog(item)" class="btn btn-primary" style="background:#33cccc;margin-top: 3px;" ng-if="login_categary==19&&item.graphicstatus!=6"><span>Release</span></a>
-                            <a ng-click="imagesCompleted(item)" class="btn btn-primary" style="background:#33cccc;margin-top: 3px;" ng-if="login_categary==19&&item.graphicstatus!=6"><span>Done</span></a> 
+                            <a ng-click="imagesCompleted(item)" class="btn btn-primary" style="background:#33cccc;margin-top: 3px;" ng-if="login_categary==19&&item.graphicstatus!=6"><span>Done</span></a>  
                             <hr style="border-top: 1px solid #33cccc;">
                            
                         </div>

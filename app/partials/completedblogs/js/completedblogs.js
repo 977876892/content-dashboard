@@ -77,6 +77,7 @@
 		}		
 	 function ApproveApiCall(){
 					var item=$scope.approveBlogItem;
+					console.log(item);
 					 var elem= document.createElement("div");
                     elem.innerHTML =item.content;
                     var images = elem.getElementsByTagName("img");
@@ -87,15 +88,17 @@
                     }
                     var content=elem.innerHTML;
 					var today_date=new Date();
+					
 					var dataObject={
 						'title':item.title,
 						'content':content,
 						'blog_id':item.blogid,
 						'coverimage':item.image,
 						'modified':today_date.getFullYear()+"-"+(today_date.getMonth()+1)+"-"+today_date.getDate(),
-                        'key':sessionStorage.key
+						'key':sessionStorage.key,
+						'created_by':item.user_id
 					}
-                  //  console.log(dataObject);
+                 console.log(dataObject);
 				 commonService.approveTheBlog(dataObject).then(function(success){
                    commonService.rateTheBlog(item.blogid,$rootScope.finalContentrating,$rootScope.finalGraphicRating).then(function(success){
 						$mdDialog.show(

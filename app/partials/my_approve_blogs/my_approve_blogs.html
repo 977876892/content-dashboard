@@ -77,12 +77,15 @@
                                 <div style="height: 160px;overflow: hidden;">
                                 <h3>
                                 <a ui-sref="app.ui.my_approve_blogs_fullview({blogId:item.blogid})" style="color:#33cccc">{{item.title}}</a>
+                              </h3>
+                              <span style="font-size:15px;"><b>Clinic Name- </b>{{item.clinic_name}}</span>
+                            <br>
                                 <!-- &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
                                   <span style="font-size:10px;"><b>Created Date- </b>{{item.created}}</span>
                                  &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <span style="font-size:20px;">{{item.clinic_name}}</span>
                                 </h3> -->
                                 
-                                <img class="media-object" ng-src="{{item.coverimage}}" ng-show="item.coverimage != defaultCoverImage">
+                                <img class="media-object" ng-src="{{item.coverimage}}" ng-show="item.coverimage != defaultCoverImage && item.coverimage != 'null">
                                 <p class="blog-content" ng-bind-html="item.content" style="word-wrap: break-word;"></p>
                                 </div>
                                 <a ui-sref="app.ui.my_approve_blogs_fullview({blogId:item.blogid})" class="btn btn-primary" style="background:#33cccc;margin-top: 3px;"><span>Read more</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>                                 

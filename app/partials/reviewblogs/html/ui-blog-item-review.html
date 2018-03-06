@@ -14,7 +14,7 @@
                              <a ui-sref="app.form.textAngularForReview({blogId:blogid})" class="btn btn-primary" style="background:#33cccc;float: right;" ng-show="login_category==4"><span>Edit</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>
                              
                              </div>
-                             <img src="{{coverImage}}" ng-show="coverImage!=''&& coverImage!=defaultCoverImage" style="max-width:100% !important;">
+                             <img src="{{coverImage}}" ng-show="coverImage!=''&& coverImage!=defaultCoverImage && coverImage!= 'null'"  style="max-width:100% !important;">
                             <div class="blog-content"><p ng-bind-html="content" style="word-wrap: break-word;"></p></div><hr>
                              <!--comments code-->
                              <div ng-include="'partials/comments/commentslist.html'"></div>

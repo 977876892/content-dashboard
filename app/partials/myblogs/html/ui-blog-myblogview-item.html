@@ -59,7 +59,7 @@
                             </div>
                             <!--&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
                                  <span style="font-size:10px;color:black;"><b>Assign Date- </b>{{created_date}}</span>-->
-                            <img ng-src="{{coverimage}}" ng-show="coverimage!=''&& coverimage != defaultCoverImage"/>
+                            <img ng-src="{{coverimage}}" ng-show="coverimage!=''&& coverimage != defaultCoverImage & coverimage != 'null'"/>
                             <div class="blog-content"><p ng-bind-html="htmlContent" style="word-wrap: break-word;"></p>
                                
                             </div>
