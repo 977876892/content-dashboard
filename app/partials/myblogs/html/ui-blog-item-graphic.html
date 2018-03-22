@@ -337,7 +337,7 @@
             fd.append('blog_id',$stateParams.blogId);
              if(uploadCover!=null && uploadCover.length!=0){
                   $scope.disableCoverImageButton=true;
-                 commonService.uploadCoverImage(fd)
+                 commonService.uploadCoverImage(fd) 
                 .success(function(response){
                      $mdDialog.show(
                                       $mdDialog.alert()
