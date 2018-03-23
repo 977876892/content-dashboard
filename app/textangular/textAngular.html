@@ -336,9 +336,8 @@
                                 'state':'done',
                                 'userid':sessionStorage.USER_ID
                               }
-                             
                               commonService.sendBlogToGraphicDesigner(dataObject).then(function(success){
-                                    $state.go("app.ui.myblogs"); 
+                                    $state.go("app.ui.myblogs");
                                   },function(fail){
                                     console.log(fail);
                                     $mdDialog.show(
@@ -372,7 +371,7 @@
                                   'state':'ionize',
                                   //'userid':sessionStorage.USER_ID
                                 }
-                           console.log(dataObject);
+                          
                            commonService.ionizetheBlog(dataObject).then(function(success){
                                $mdDialog.show($mdDialog.alert()
                                 .parent(angular.element(document.querySelector('#popupContainer')))

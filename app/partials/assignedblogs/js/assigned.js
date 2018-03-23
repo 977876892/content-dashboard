@@ -76,7 +76,7 @@
 					console.log(item);
 					//return;
                   	var confirm = $mdDialog.confirm()
-                          .title('Would you like to Ionize The blog?')
+                          .title('Are you sure C.W and G.D work Complted?')
                                     .ok('Yes')
                                     .cancel('No'); 
                           $mdDialog.show(confirm).then(function() {
@@ -94,7 +94,7 @@
                                   $mdDialog.alert()
                                     .parent(angular.element(document.querySelector('#popupContainer')))
                                     .clickOutsideToClose(true)
-                                    .textContent("Blog Ionized successfully")
+                                    .textContent("Blog Completed successfully.")
                                     .ok('Ok')
                                     .targetEvent()
                                 ).then(function() {

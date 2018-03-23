@@ -231,19 +231,36 @@
 					}
                 console.log(dataObject);
 				commonService.approveTheBlog(dataObject).then(function(success){
-                    commonService.rateTheBlog($stateParams.blogId,$rootScope.finalContentrating,$rootScope.finalGraphicRating).then(function(success){
-                         $mdDialog.show(
-                                  $mdDialog.alert()
-                                    .parent(angular.element(document.querySelector('#popupContainer')))
-                                    .clickOutsideToClose(true)
-                                    .textContent("Blog is posted to related doctor is successfully.")
-                                    .ok('Ok')
-                                    .targetEvent()
-                                ).then(function() {
-                                    $state.go("app.ui.ionizedBlogs");
+                     if(success.data.status=="error")
+							{
+								$mdDialog.show(
+                                      $mdDialog.alert()
+                                        .parent(angular.element(document.querySelector('#popupContainer')))
+                                        .clickOutsideToClose(true)
+                                        .textContent(success.data.result)
+                                        .ok('Ok')
+                                        .targetEvent()
+                                    ).then(function() {
+											//getCompletedBlogs();
+										
                                 }, function() {
                                 });
-                    },function(error){});
+							}
+							else{
+                                commonService.rateTheBlog($stateParams.blogId,$rootScope.finalContentrating,$rootScope.finalGraphicRating).then(function(success){
+                                    $mdDialog.show(
+                                            $mdDialog.alert()
+                                                .parent(angular.element(document.querySelector('#popupContainer')))
+                                                .clickOutsideToClose(true)
+                                                .textContent("Blog is posted to related doctor is successfully.")
+                                                .ok('Ok')
+                                                .targetEvent()
+                                            ).then(function() {
+                                                $state.go("app.ui.ionizedBlogs");
+                                            }, function() {
+                                            });
+                                },function(error){});
+                            }
 				},function(fail){
 					console.log(fail);
 				})

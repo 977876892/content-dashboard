@@ -100,21 +100,40 @@
 					}
                  console.log(dataObject);
 				 commonService.approveTheBlog(dataObject).then(function(success){
-                   commonService.rateTheBlog(item.blogid,$rootScope.finalContentrating,$rootScope.finalGraphicRating).then(function(success){
-						$mdDialog.show(
+					 console.log(success);
+					  if(success.data.status=="error")
+							{
+								$mdDialog.show(
                                       $mdDialog.alert()
                                         .parent(angular.element(document.querySelector('#popupContainer')))
                                         .clickOutsideToClose(true)
-                                        .textContent('Blog is posted to related doctor is successfully.')
+                                        .textContent(success.data.result)
                                         .ok('Ok')
                                         .targetEvent()
                                     ).then(function() {
-											getCompletedBlogs();
+											//getCompletedBlogs();
 										
                                 }, function() {
                                 });
-						
-                    },function(error){});
+							}
+							else{
+								commonService.rateTheBlog(item.blogid,$rootScope.finalContentrating,$rootScope.finalGraphicRating).then(function(success){
+									$mdDialog.show(
+												$mdDialog.alert()
+													.parent(angular.element(document.querySelector('#popupContainer')))
+													.clickOutsideToClose(true)
+													.textContent('Blog is posted to related doctor is successfully.')
+													.ok('Ok')
+													.targetEvent()
+												).then(function() {
+														getCompletedBlogs();
+													
+											}, function() {
+											});
+									
+								},function(error){});
+							}
+                  
 				
 				},function(fail){
 					$mdDialog.show(

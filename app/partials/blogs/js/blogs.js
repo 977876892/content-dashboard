@@ -234,34 +234,51 @@
 								'created_by':selectedprofile           
 		}
 		commonService.assignTheBlog(dataObject).then(function(success){
-						            console.log(success);
-									$mdDialog.show(
-                                      $mdDialog.alert()
-                                        .parent(angular.element(document.querySelector('#popupContainer')))
-                                        .clickOutsideToClose(true)
-                                        .textContent('Blog is Assigned To Graphic Designer successfully.')
-                                        .ok('Ok')
-                                        .targetEvent()
-                                    ).then(function() {
-										gettingAllBlogs();
-                                }, function() {
-                                });
+									console.log(success);
+									if(success.data.status=="Failed")
+									{
+										$mdDialog.show(
+											$mdDialog.alert()
+												.parent(angular.element(document.querySelector('#popupContainer')))
+												.clickOutsideToClose(true)
+												.textContent(success.data.info)
+												.ok('Ok')
+												.targetEvent()
+											).then(function() {
+												//gettingAllBlogs();
+										}, function() {
+										});
+									}
+									else{
+											$mdDialog.show(
+												$mdDialog.alert()
+													.parent(angular.element(document.querySelector('#popupContainer')))
+													.clickOutsideToClose(true)
+													.textContent('Blog is  Assigned To Graphic Designer.')
+													.ok('Ok')
+													.targetEvent()
+												).then(function() {
+														gettingAllBlogs();
+											}, function() {
+											});
+									}	
+									
 								 	
 								//location.reload(true);
 								//window.location.reload();
 							},function(error){
 								$mdDialog.show(
-                                      $mdDialog.alert()
-                                        .parent(angular.element(document.querySelector('#popupContainer')))
-                                        .clickOutsideToClose(true)
-                                        .textContent('Blog is Not Assigned To Content Writer Please Check Your Internet Connection And Then Contact Medicodesk.')
-                                        .ok('Ok')
-                                        .targetEvent()
-                                    ).then(function() {
-                                 
-                                }, function() {
-                                });
-								console.log(fail);
+												$mdDialog.alert()
+													.parent(angular.element(document.querySelector('#popupContainer')))
+													.clickOutsideToClose(true)
+													.textContent('Blog is Not Assigned To Graphic Designer Please Check Your Internet Connection And Then Contact Medicodesk.')
+													.ok('Ok')
+													.targetEvent()
+												).then(function() {
+											
+											}, function() {
+								});
+								//console.log(fail);
 							})
 					// },
 					// function(error){

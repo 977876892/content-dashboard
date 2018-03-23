@@ -93,7 +93,7 @@
                             <p ng-bind-html="item.content" style="height:100px;overflow:hidden;word-wrap: break-word;"></p>
                              </div>
                             <!--<img class="media-object" ng-src="{{item.image.url}}">
-                            <p class="blog-content">{{item.description}}</p>--> 
+                            <p class="blog-content">{{item.description}}</p>-->
                             <a ui-sref="app.ui.blogViewForGraphic({blogId:item.blogid,graphicStatus:item.graphicstatus})" class="btn btn-primary" style="background:#33cccc;margin-top: 3px;" ng-if="login_categary==19"><span>Read More</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>
                             <a ui-sref="app.form.textAngular({blogId:item.blogid,graphicStatus:item.graphicstatus})" class="btn btn-primary" style="background:#33cccc;margin-top: 3px;" ng-if="login_categary==4"><span>Edit</span>  &nbsp; <i class="fa fa-angle-double-right"></i></a>
                             <a ng-click="releaseTheBlog(item)" class="btn btn-primary" style="background:#33cccc;margin-top: 3px;" ng-if="item.graphic_designer==0 && login_categary==4"><span>Release</span></a>

@@ -666,6 +666,20 @@ $scope.disableCoverImageButton=false;
             'created_by':$scope.user_id
 					}
 			commonService.approveTheBlog(dataObject).then(function(success){
+         if(success.data.status=="error")
+							{
+                        $mdDialog.show(
+                              $mdDialog.alert()
+                                .parent(angular.element(document.querySelector('#popupContainer')))
+                                .clickOutsideToClose(true)
+                                .textContent(success.data.result)
+                                .ok('Ok')
+                                .targetEvent()
+                            ).then(function() {
+                        }, function() {
+                        });
+							}
+							else{
                     console.log(sessionStorage.IonServer+"/index.php/request?action=updateblog&module=ionize&resource=posts&blog_id="+$stateParams.blogId+"&state=rate&content_rate="+$rootScope.finalContentrating+"&graphic_rate="+$rootScope.finalGraphicRating);
                     $http.get(sessionStorage.IonServer+"/index.php/request?action=updateblog&module=ionize&resource=posts&blog_id="+$stateParams.blogId+"&state=rate&content_rate="+$rootScope.finalContentrating+"&graphic_rate="+$rootScope.finalGraphicRating).then(function(success){
                          $mdDialog.show($mdDialog.alert()
@@ -680,6 +694,7 @@ $scope.disableCoverImageButton=false;
                             }, function() {
                             });
                     },function(error){});
+              }
 				},function(fail){
                    $mdDialog.show($mdDialog.alert()
                       .parent(angular.element(document.querySelector('#popupContainer')))

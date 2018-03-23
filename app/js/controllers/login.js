@@ -4,7 +4,7 @@
   // signin controller
 app.controller('LoginFormController', ['$scope','$rootScope', '$http', '$state', function($scope,$rootScope, $http, $state) {
     
-     sessionStorage.IonServer="http://staging.getion.in";
+     sessionStorage.IonServer="http://dashboard.getion.in";
       $scope.login=function(username,password){
         if(typeof username!="undefined" &&typeof password!="undefined")
         {
